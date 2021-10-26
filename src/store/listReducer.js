@@ -19,7 +19,7 @@ export const listReducer = (state = defaulteState, action) => {
             return {
                 ...state, elems: state.elems.filter(elem => {
                     if (elem.id === action.payload.id) {
-                        elem.childs = action.payload.childs
+                        elem = action.payload
                     }
                     return state.elems;
                 })

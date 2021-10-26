@@ -3,8 +3,9 @@ import React from "react";
 import ToPDF from "./ToPDF";
 import ToClipboard from "./ToClipboard";
 import FromJson from "./FromJson";
-import ViewList from "./ViewList";
+import ViewTodo from "./ViewTodo";
 import { useSelector } from "react-redux";
+import Notification from "./Notification";
 
 export default function Main() {
     const mainListId = useSelector(state=>state.mainListId.value);
@@ -17,8 +18,9 @@ export default function Main() {
                 <FromJson />
             </Box>
             <Box>
-                <ViewList mainListId={mainListId} />
+                <ViewTodo mainListId={mainListId} />
             </Box>
+            <Notification />
         </Box>
     )
 }

@@ -1,23 +1,25 @@
 import { Button } from "@mui/material";
 import React from "react";
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { useSelector, useDispatch } from "react-redux";
-import { addJsonAction } from "../store/jsonDataReducer";
+import { useSelector } from "react-redux";
 import MyDocument from "./MyDocument";
 
 export default function ToPDF() {
-    const dispath = useDispatch();
     const list = useSelector(state => state.list.elems);
-    const json = useSelector(state => state.json.str);
-    dispath(addJsonAction(JSON.stringify(list)))
+    const infoToPDF = [];
+
+    function addInfoPDF() {
+        list.map(elem => { // eslint-disable-line
+            infoToPDF.push(Object.values(elem));
+        })
+    }
 
     return (
-        <PDFDownloadLink document={<MyDocument json={json} />}
+        <PDFDownloadLink document={<MyDocument info={infoToPDF} />}
             fileName={Date.now() + '.pdf'} style={{ color: 'white', textDecoration: "none", }}>
-            <Button variant='contained'>
+            <Button variant="contained" onClick={addInfoPDF()}>
                 To PDF
             </Button>
         </PDFDownloadLink>
-
     )
 }
