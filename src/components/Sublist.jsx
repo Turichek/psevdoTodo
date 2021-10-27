@@ -4,7 +4,7 @@ import ViewItemsList from "./ViewItemsList";
 
 export default function Sublist({ parentId }) {
     return (
-        <Box sx={{mt:1}}>
+        <Box sx={{width:1}}>
             <ViewItemsList parent={parentId} />
         </Box>
     )

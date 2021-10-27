@@ -10,8 +10,13 @@ export default function ToClipboard() {
     const json = useSelector(state => state.json.str)
 
     function inClipboard() {
-        navigator.clipboard.writeText(json);
-        dispatch(openCloseAlertAction({open: true, text: 'Текст добавлен в буфер обмена', severity: 'success'}));
+        if (list.length !== 0) {
+            navigator.clipboard.writeText(json);
+            dispatch(openCloseAlertAction({ open: true, text: 'Список добавлен в буфер обмена', severity: 'success' }));
+        }
+        else{
+            dispatch(openCloseAlertAction({ open: true, text: 'Список пуст', severity: 'error' }));
+        }
     }
 
     function addInfoToClipboard() {
@@ -19,6 +24,6 @@ export default function ToClipboard() {
     }
 
     return (
-            <Button onMouseEnter={addInfoToClipboard()} onClick={inClipboard} variant='contained'>To Clipboard</Button>
+        <Button sx={{ width: 1 }} onMouseEnter={addInfoToClipboard} onClick={inClipboard} variant='contained'>To Clipboard</Button>
     )
 }

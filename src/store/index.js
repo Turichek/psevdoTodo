@@ -12,4 +12,4 @@ const rootReducer = combineReducers({
     alert: alertReducer,
 })
 
-export const store = createStore(rootReducer,composeWithDevTools());
+export const store = createStore(rootReducer, composeWithDevTools());

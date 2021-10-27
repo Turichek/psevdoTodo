@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Paper,Grid } from "@mui/material";
 import React from "react";
 import ToPDF from "./ToPDF";
 import ToClipboard from "./ToClipboard";
@@ -12,14 +12,20 @@ export default function Main() {
 
     return (
         <Box>
-            <Box>
-                <ToPDF />
-                <ToClipboard />
-                <FromJson />
-            </Box>
-            <Box>
+            <Grid container spacing={1} columns={9}>
+                <Grid item xl={3}>
+                    <ToPDF />
+                </Grid>
+                <Grid item xl={3}>
+                    <ToClipboard />
+                </Grid>
+                <Grid item xl={3}>
+                    <FromJson />
+                </Grid>
+            </Grid>
+            <Paper sx={{mt:3}} elevation={5}>
                 <ViewTodo mainListId={mainListId} />
-            </Box>
+            </Paper>
             <Notification />
         </Box>
     )

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, List, ListItem, Modal, TextField, Backdrop, Typography, Fade } from "@mui/material";
+import { Box, Button, List, ListItem, Modal, TextField, Backdrop, Typography, Fade, Paper } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { addElemAction, removeElemAction, updateElemAction } from "../store/listReducer";
 import Sublist from "./Sublist";
@@ -24,8 +24,10 @@ const style = {
 export default function ViewItemsList({ parent }) {
     const dispath = useDispatch();
     const list = useSelector(state => state.list.elems);
+    const [name, setName] = useState('');
     const [open, setOpen] = useState(false);
-    const [name, setName] = useState('')
+    const [startElem, setStartElem] = useState({});
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -33,7 +35,7 @@ export default function ViewItemsList({ parent }) {
     const delay = 200;
     let prevent = false; // eslint-disable-line
 
-    function deleteChilds(parent){
+    function deleteChilds(parent) {
         list.map(item => { // eslint-disable-line
             if (item.parent === parent.id) {
                 deleteChilds(item);
@@ -43,7 +45,7 @@ export default function ViewItemsList({ parent }) {
     }
 
     const addToList = (name, parent) => {
-        if (name !== null) {
+        if (name !== null && name !== '') {
             const elem = {
                 id: Date.now(),
                 name: name,
@@ -56,7 +58,7 @@ export default function ViewItemsList({ parent }) {
             setOpen(false);
         }
         else {
-            dispath(openCloseAlertAction({ open: true, text: 'Элемент не добавлен в список', severity: 'error' }));
+            dispath(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента', severity: 'error' }));
         }
     }
 
@@ -99,18 +101,47 @@ export default function ViewItemsList({ parent }) {
         dispath(updateElemAction(elem));
     }
 
+    const insert = (arr, index, newItem) => [
+        ...arr.slice(0, index),
+        newItem,
+        ...arr.slice(index)
+    ]
+
+    const DragStart = (e, elem) => {
+        e.stopPropagation();
+        setStartElem(elem);
+        console.log(elem, 'start');
+    }
+
+    const DragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    const Drop = (e, elem) => {
+        e.stopPropagation();
+        console.log(startElem, elem, list, ' drop elem');
+
+        
+
+        setStartElem({});
+        return false;
+    }
+
     return (
         <>
-            <List>
+            <List sx={{ p: 0 }}>
                 {
                     list.map(elem =>
                         elem.parent === parent ?
-                            <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}
-
-                                onDoubleClick={(e) => openEditorElem(e, elem)}
-                                key={elem.id}>
-                                {
-                                    elem.edit !== false ?
+                            <Paper sx={{ m: 1 }} elevation={3} key={elem.id}>
+                                <ListItem draggable='true' value={elem.id} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}
+                                    onDoubleClick={(e) => openEditorElem(e, elem)}
+                                    onDrop={(e) => Drop(e, elem)}
+                                    onDragOver={(e) => DragOver(e)}
+                                    onDragStart={(e) => DragStart(e, elem)}
+                                >
+                                    {elem.edit !== false ?
                                         <Box>
                                             <TextField onClick={(e) => e.stopPropagation()}
                                                 onKeyDown={(e) => editElem(e, elem)}
@@ -122,21 +153,20 @@ export default function ViewItemsList({ parent }) {
                                             <Button onClick={() => removeElem(elem)} sx={{ ml: 3 }} variant='contained' color='error'><DeleteIcon /></Button>
                                             {elem.childs === false ?
                                                 <Button sx={{ ml: 1 }} onClick={() => addSublist(elem)} color='success' variant='contained'>Добавить саблист</Button>
-                                                : 
+                                                :
                                                 <Button sx={{ ml: 1 }} onClick={() => deleteSublist(elem)} color='error' variant='contained'>Удалить саблист</Button>
                                             }
                                         </Box>
-                                }
-
-                                {elem.childs !== false ?
-                                    <Sublist parentId={elem.id} />
-                                    : null}
-                            </ListItem>
-                            :
-                            null
-                    )
-                }
-                <Button sx={{ mx: 1 }} variant='contained' onClick={handleOpen}>Добавить в список</Button>
+                                    }
+                                    {elem.childs !== false ?
+                                        <Sublist parentId={elem.id} />
+                                        : null
+                                    }
+                                </ListItem>
+                            </Paper>
+                            : null
+                    )}
+                <Button sx={{ m: 1 }} variant='contained' onClick={handleOpen}>Добавить новый элемент в список</Button>
             </List>
             <Modal
                 aria-labelledby="transition-modal-title"
@@ -147,16 +177,11 @@ export default function ViewItemsList({ parent }) {
                 BackdropComponent={Backdrop}
                 BackdropProps={{
                     timeout: 500,
-                }}
-            >
-
+                }}>
                 <Fade in={open}>
                     <Box sx={style}>
-                        <Typography id="transition-modal-title" variant="h6" component="h2">
-                            Введите название элемента
-                        </Typography>
-                        <TextField onChange={(e) => setName(e.target.value)} value={name} variant="standard" />
-                        <Button sx={{ mt: 1 }} variant='contained' onClick={() => addToList(name, parent)}>Add to List</Button>
+                        <TextField label='Введите название элемента' onChange={(e) => setName(e.target.value)} value={name} variant="standard" />
+                        <Button sx={{ mt: 1 }} variant='contained' onClick={() => addToList(name, parent)}>Добавить</Button>
                     </Box>
                 </Fade>
             </Modal>

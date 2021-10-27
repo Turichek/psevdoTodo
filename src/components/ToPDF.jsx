@@ -17,7 +17,7 @@ export default function ToPDF() {
     return (
         <PDFDownloadLink document={<MyDocument info={infoToPDF} />}
             fileName={Date.now() + '.pdf'} style={{ color: 'white', textDecoration: "none", }}>
-            <Button variant="contained" onClick={addInfoPDF()}>
+            <Button sx={{width:1}} variant="contained" onClick={addInfoPDF()}>
                 To PDF
             </Button>
         </PDFDownloadLink>
