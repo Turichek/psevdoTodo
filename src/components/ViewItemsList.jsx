@@ -1,11 +1,12 @@
 import React from "react";
 import { Box, Button, List, ListItem, Modal, TextField, Backdrop, Typography, Fade, Paper } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { addElemAction, removeElemAction, updateElemAction } from "../store/listReducer";
+import { addElemAction, removeElemAction, updateElemAction, updateListAction } from "../store/listReducer";
 import Sublist from "./Sublist";
 import { useState } from "react";
 import { openCloseAlertAction } from "../store/alertReducer";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { addDragElemAction } from "../store/dragElemReducer";
 
 const style = {
     display: 'flex',
@@ -24,10 +25,11 @@ const style = {
 export default function ViewItemsList({ parent }) {
     const dispath = useDispatch();
     const list = useSelector(state => state.list.elems);
+    const dragElem = useSelector(state=>state.dragElem.elem);
+
     const [name, setName] = useState('');
     const [open, setOpen] = useState(false);
-    const [startElem, setStartElem] = useState({});
-
+ 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
@@ -108,9 +110,10 @@ export default function ViewItemsList({ parent }) {
     ]
 
     const DragStart = (e, elem) => {
-        e.stopPropagation();
-        setStartElem(elem);
+        dispath(addDragElemAction(elem));
+
         console.log(elem, 'start');
+        e.stopPropagation();
     }
 
     const DragOver = (e) => {
@@ -118,14 +121,83 @@ export default function ViewItemsList({ parent }) {
         e.stopPropagation();
     }
 
-    const Drop = (e, elem) => {
+    const DragEnter = (e) => {
+        e.preventDefault();
+        console.log(dragElem, 'enter');
         e.stopPropagation();
-        console.log(startElem, elem, list, ' drop elem');
+    }
 
-        
+    const Drop = (e, elem) => {
+        console.log(dragElem);
+        const childs = findAllChilds(elem.parent);
+        let newParent = {};
 
-        setStartElem({});
+        /*if(dragElem.parent !== elem.parent){
+            newParent = {
+                id: dragElem.id,
+                name: dragElem.name,
+                parent: elem.parent,
+                childs: dragElem.childs,
+                edit: dragElem.edit,
+            }
+        }*/
+
+        list.splice(list.indexOf(dragElem), 1);
+        if (childs.indexOf(elem) !== childs.length - 1) {
+            let res = []
+            if(dragElem.parent !== elem.parent){
+                newParent = {
+                    id: dragElem.id,
+                    name: dragElem.name,
+                    parent: elem.parent,
+                    childs: dragElem.childs,
+                    edit: dragElem.edit,
+                }
+                res = insert(list, list.indexOf(elem), newParent);
+            }
+            else{
+                res = insert(list, list.indexOf(elem), dragElem);
+            }
+            
+            dispath(updateListAction(res));
+            dispath(addDragElemAction({}));
+            
+        }
+        else {
+            if(dragElem.parent !== elem.parent){
+                newParent = {
+                    id: dragElem.id,
+                    name: dragElem.name,
+                    parent: elem.parent,
+                    childs: dragElem.childs,
+                    edit: dragElem.edit,
+                }
+                list.push(newParent);
+            }
+            else{
+                list.push(dragElem);
+            }
+            
+            dispath(updateListAction(list));
+            dispath(addDragElemAction({}));
+        }
+
+        console.log(dragElem, elem, list, ' drop elem');
+
+        e.stopPropagation();
         return false;
+    }
+
+    function findAllChilds(parentId){
+        let childs=[];
+
+        list.map(item => { // eslint-disable-line
+            if (item.parent === parentId) {
+                childs.push(item);
+            }
+        })
+
+        return childs;
     }
 
     return (
@@ -139,6 +211,7 @@ export default function ViewItemsList({ parent }) {
                                     onDoubleClick={(e) => openEditorElem(e, elem)}
                                     onDrop={(e) => Drop(e, elem)}
                                     onDragOver={(e) => DragOver(e)}
+                                    onDragEnter={(e) => DragEnter(e)}
                                     onDragStart={(e) => DragStart(e, elem)}
                                 >
                                     {elem.edit !== false ?

@@ -4,12 +4,14 @@ import { jsonDataReducer } from './jsonDataReducer';
 import { listReducer } from './listReducer';
 import { mainListIdReducer } from './mainListIdReducer';
 import { alertReducer } from './alertReducer';
+import { dragElemReducer } from './dragElemReducer';
 
 const rootReducer = combineReducers({
     json: jsonDataReducer,
     list: listReducer,
     mainListId: mainListIdReducer,
     alert: alertReducer,
+    dragElem: dragElemReducer,
 })
 
 export const store = createStore(rootReducer, composeWithDevTools());
