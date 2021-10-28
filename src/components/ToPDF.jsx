@@ -6,7 +6,7 @@ import MyDocument from "./MyDocument";
 
 export default function ToPDF() {
     const list = useSelector(state => state.list.elems);
-    const infoToPDF = [];
+    let infoToPDF = [];
 
     function addInfoPDF() {
         list.map(elem => { // eslint-disable-line

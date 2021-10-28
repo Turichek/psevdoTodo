@@ -1,13 +1,29 @@
+import { Button, Grid } from '@mui/material';
 import './App.css';
 import Main from './components/Main';
-import MyContainer from './components/MyContainer';
+import ToPDF from "./components/ToPDF";
+import ToClipboard from "./components/ToClipboard";
+import FromJson from "./components/FromJson";
 
 function App() {
   return (
     <div className="App">
-      <MyContainer>
-        <Main/>
-      </MyContainer>
+      <Grid sx={{ mt: '2%' }} container columns={{ xl: 9 }} justifyContent={'space-around'}>
+        <Grid item xl={2}>
+          <Button sx={{ width: 1 }} variant='contained'>Преобразовать псевдо код</Button>
+        </Grid>
+        <Grid item xl={2}>
+          <ToPDF />
+        </Grid>
+        <Grid item xl={2}>
+          <ToClipboard />
+        </Grid>
+        <Grid item xl={2}>
+          <FromJson />
+        </Grid>
+
+      </Grid>
+      <Main />
     </div>
   );
 }
