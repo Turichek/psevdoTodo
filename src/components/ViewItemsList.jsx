@@ -3,35 +3,76 @@ import { Button, List, Paper } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import Sublist from "./Sublist";
 import { openCloseModalAction } from "../store/modalOpenReducer";
+import WithCheckBox from "./WithCheckBox";
+import Input from "./Input";
+import DateTimePicker from "./DateTimePicker";
+import { addToListPicker } from "./helpers/toList";
+import Img from "./Img";
+import Linktype from "./Link";
+import Expired from "./Expired";
 
 export default function ViewItemsList({ parent, type }) {
     const dispath = useDispatch();
     const list = useSelector(state => state.list);
 
-    function openCloseModal(value) {
-        dispath(openCloseModalAction(value))
+    function openCloseModal() {
+        if (list.type === 'sublist' || list.type === 'withCheckBox') {
+            dispath(openCloseModalAction({ open: true, text: 'Введите название элемента', parent: parent }))
+        }
+        else if (list.type === 'input') {
+            dispath(openCloseModalAction({ open: true, text: 'Введите название элементов через запятую', parent: parent }))
+        }
+        else if (list.type === 'img') {
+            dispath(openCloseModalAction({ open: true, text: 'Введите ссылку на картинку', parent: parent }))
+        }
+        else if (list.type === 'link') {
+            dispath(openCloseModalAction({ open: true, text: 'Введите текст ссылки', parent: parent }))
+        }
+        else if (list.type === 'expired') {
+            dispath(openCloseModalAction({ open: true, text: 'Введите до какого момента будет существовать элемент:', parent: parent }))
+        }
     }
 
     return (
         <>
-            <List sx={{ p: 0, width: 'max-content' }}>
+            <List sx={{ mx: 1,p: 0 }}>
                 {
                     list.elems.map(elem =>
                         elem.parent === parent ?
-                            <Paper sx={{ m: 1 }} elevation={3} key={elem.id}>
+                            <Paper sx={{ m: 1 ,width: 'max-content' }} elevation={3} key={elem.id}>
                                 {
-                                    type === 'sublist' ?
-                                        <Sublist elem={elem}
-                                            draggable={list.draggable}
-                                            disabled={list.disabled}
-                                            editable={list.editable} />
+                                    list.type === 'sublist' ?
+                                        <Sublist elem={elem} />
+                                        :
+                                    list.type === 'withCheckBox' ?
+                                        <WithCheckBox elem={elem} />
+                                        :
+                                    list.type === 'input' ?
+                                        <Input elem={elem} />
+                                        :
+                                    list.type === 'datepicker' || list.type === 'timepicker' ?
+                                        <DateTimePicker elem={elem} />
+                                        :
+                                    list.type === 'img' ?
+                                        <Img elem={elem} />
+                                        :
+                                    list.type === 'link' ?
+                                        <Linktype elem={elem} />
+                                        :
+                                    list.type === 'expired' ?
+                                        <Expired elem={elem} />
                                         :
                                         null
                                 }
                             </Paper>
                             : null
                     )}
-                <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal({ open: true, text: 'Введите название элемента', parent: parent })}>Добавить новый элемент в список</Button>
+                {
+                    list.type === 'datepicker' || list.type === 'timepicker' ?
+                        <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addToListPicker(e, list.id, dispath)}>Добавить новый элемент в список</Button>
+                        :
+                        <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal()}>Добавить новый элемент в список</Button>
+                }
             </List>
 
         </>

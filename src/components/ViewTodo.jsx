@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { openCloseModalAction } from "../store/modalOpenReducer";
 import ViewItemsList from "./ViewItemsList";
 
-export default function ViewTodo({ mainListId, type }) {
+export default function ViewTodo({ mainListId }) {
     const dispatch = useDispatch();
     const list = useSelector(state => state.list);
 
@@ -17,7 +17,7 @@ export default function ViewTodo({ mainListId, type }) {
                     :
                     <>
                         <Box sx={{ m: 1, pt: 1 }}>Ваш список: {list.name}</Box>
-                        <ViewItemsList parent={mainListId} type={type} />
+                        <ViewItemsList parent={mainListId} />
                     </>
             }
         </>

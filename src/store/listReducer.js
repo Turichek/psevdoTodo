@@ -3,7 +3,7 @@ const defaulteState = {
     name: '',
     elems: [],
     type: '',
-    draggable: false,
+    draggable: 'false',
     disabled: false,
     editable: false,
 }

@@ -1,13 +1,15 @@
-import { Box, Paper, Modal, Fade, Backdrop, TextField, Button, FormControl, Select, MenuItem, InputLabel, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, Paper, Modal, Fade, Backdrop, TextField, Button, FormControl, Select, MenuItem, InputLabel, FormControlLabel, Checkbox, Typography } from "@mui/material";
 import React from "react";
-import { useState } from "react";
-import { addToList, toList } from "./helpers/toList";
+import { useState,forwardRef } from "react";
+import { addToList, addToListExpired, addToListImg, addToListInput, addToListLink, toList } from "./helpers/toList";
 import ViewTodo from "./ViewTodo";
 import { useDispatch, useSelector } from "react-redux";
 import Notification from "./Notification";
 import EditorField from "./EditorField";
 import { openCloseModalAction } from "../store/modalOpenReducer";
 import { setListDisabled, setListDraggable, setListType, setListEditable, setListName } from "../store/listReducer";
+import { openCloseAlertAction } from "../store/alertReducer";
+import DatePicker from "react-datepicker";
 
 const style = {
     display: 'flex',
@@ -23,11 +25,19 @@ const style = {
     p: 4,
 };
 
+const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
+    <TextField sx={{width:1}} variant={'outlined'} onClick={onClick} ref={ref}>
+        {value}
+    </TextField>
+));
+
 export default function Main() {
     const dispatch = useDispatch();
+    const list = useSelector(state => state.list);
     const mainListId = useSelector(state => state.mainListId.value);
     const modal = useSelector(state => state.modal);
     const [name, setName] = useState('');
+    const [value, setValue] = useState('');
     const [type, setType] = useState('');
 
     const SetTypeList = (event) => {
@@ -36,24 +46,29 @@ export default function Main() {
     };
 
     const SetDragList = (event) => {
-        if (event.target.value === 'on') dispatch(setListDraggable(true));
-        else dispatch(setListDraggable(false));
+        if (event.target.checked) dispatch(setListDraggable('true'));
+        else dispatch(setListDraggable('false'));
     };
 
     const SetDisabledList = (event) => {
-        if (event.target.value === 'on') dispatch(setListDisabled(true));
+        if (event.target.checked) dispatch(setListDisabled(true));
         else dispatch(setListDisabled(false));
     };
 
     const SetEditList = (event) => {
-        if (event.target.value === 'on') dispatch(setListEditable(true));
+        if (event.target.checked) dispatch(setListEditable(true));
         else dispatch(setListEditable(false));
     };
 
     const CreateList = () => {
-        dispatch(setListName(name));
-        setName('');
-        dispatch(openCloseModalAction({ open: false, text: '' }));
+        if (list.type !== '') {
+            dispatch(setListName(name));
+            setName('');
+            dispatch(openCloseModalAction({ open: false, text: '' }));
+        }
+        else {
+            dispatch(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента или не указан тип листа', severity: 'error' }));
+        }
     }
 
     return (
@@ -62,8 +77,8 @@ export default function Main() {
                 <Paper sx={{ width: 0.49, height: 1 }} elevation={5}>
                     <EditorField />
                 </Paper>
-                <Paper sx={{ width: 0.49 }} elevation={5}>
-                    <ViewTodo mainListId={mainListId} type={'sublist'} />
+                <Paper sx={{ width: 0.49, overflow: 'auto' }} elevation={5}>
+                    <ViewTodo mainListId={mainListId} />
                 </Paper>
             </Box>
             <Notification />
@@ -78,13 +93,49 @@ export default function Main() {
                 }}>
                 <Fade in={modal.open}>
                     <Box sx={style}>
-                        <TextField label={modal.text} onChange={(e) => setName(e.target.value)} value={name} variant="outlined" />
                         {
+                            modal.text === 'Введите до какого момента будет существовать элемент:' && list.type === 'expired' ?
+                            null
+                            : 
+                            <TextField label={modal.text} onChange={(e) => setName(e.target.value)} value={name} variant="outlined" />
+                             
+                            
+                        }
+                        {
+                            modal.text === 'Введите название элементов через запятую' &&
+                                list.type === 'input' ?
+                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListInput(e, name, modal.parent, setName, dispatch)}>Добавить</Button>
+                                :
+                            modal.text === 'Введите название элемента' &&
+                                (list.type === 'sublist' || list.type === 'withCheckBox') ?
+                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToList(e, name, modal.parent, setName, dispatch)}>Добавить</Button>
+                                :
+                            modal.text === 'Введите ссылку на картинку' &&
+                                list.type === 'img' ?
+                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListImg(e, name, setName, modal.parent, dispatch)}>Добавить</Button>
+                                :
+                            modal.text === 'Введите текст ссылки' &&
+                                list.type === 'link' ?
+                                <>
+                                    <TextField sx={{ mt: 1 }} label={'Введите ссылку'} onChange={(e) => setValue(e.target.value)} value={value} variant="outlined" />
+                                    <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListLink(e, name, value, setName, setValue, modal.parent, dispatch)}>Добавить</Button>
+                                </>
+                                :
+                            modal.text === 'Введите до какого момента будет существовать элемент:' &&
+                                list.type === 'expired' ?
+                                <>
+                                    <Typography variant="subtitle1">{modal.text}</Typography>
+                                    <DatePicker selected={value}
+                                        onChange={(value) => setValue(value)}
+                                        showTimeSelect
+                                        timeIntervals={1}
+                                        dateFormat="MMMM d, yyyy H:mm:ss"
+                                        customInput={<ExampleCustomInput />}/>
+                                    <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListExpired(e, value, setValue, modal.parent, dispatch)}>Добавить</Button>
+                                </>
+                                :
                             modal.text === 'Введите json для преобразования в список' ?
                                 <Button sx={{ mt: 1 }} variant='contained' onClick={() => toList(name, dispatch, setName)}>Добавить</Button>
-                                :
-                            modal.text === 'Введите название элемента' ?
-                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToList(e, name, modal.parent, setName, dispatch)}>Добавить</Button>
                                 :
                             modal.text === 'Введите название списка' ?
                                 <>
@@ -107,7 +158,7 @@ export default function Main() {
                                             <MenuItem value={'timepicker'}>timepicker</MenuItem>
                                             <MenuItem value={'img'}>img</MenuItem>
                                             <MenuItem value={'link'}>link</MenuItem>
-                                            <MenuItem value={'expireddate'}>expireddate</MenuItem>
+                                            <MenuItem value={'expired'}>expired</MenuItem>
                                         </Select>
                                     </FormControl>
                                     <Box sx={{ mt: 1, display: "flex", justifyContent: 'space-between' }}>

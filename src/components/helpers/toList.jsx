@@ -15,7 +15,7 @@ export const toList = (import_json, dispath, setName) => {
         if (str.charAt(0) === '[') {
             dispath(updateListAction(JSON.parse(str)));
             dispath(openCloseAlertAction({ open: true, text: 'Список успешно добавлен', severity: 'success' }));
-            dispath(openCloseModalAction({ open: false, text: '', parent: -1}));
+            dispath(openCloseModalAction({ open: false, text: '', parent: -1 }));
             setName('');
         }
         else {
@@ -39,11 +39,99 @@ export const addToList = (e, name, parent, setName, dispath) => {
         dispath(addElemAction(elem))
         setName('');
         dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
+        dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
     }
     else {
         dispath(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента', severity: 'error' }));
     }
     e.stopPropagation();
+}
+
+export const addToListInput = (e, name, parent, setName, dispath) => {
+    if (name !== null && name !== '') {
+        const arr = name.split(',')
+        const elem = {
+            id: Date.now(),
+            name: arr,
+            parent: parent,
+            edit: false,
+        }
+        dispath(addElemAction(elem))
+        setName('');
+        dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
+        dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
+    }
+    else {
+        dispath(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента', severity: 'error' }));
+    }
+    e.stopPropagation();
+}
+
+export const addToListPicker = (e, parent, dispath) => {
+    const elem = {
+        id: Date.now(),
+        name: Date.now(),
+        parent: parent,
+        edit: false,
+    }
+    dispath(addElemAction(elem))
+    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
+    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
+    e.stopPropagation();
+}
+
+export const addToListImg = (e, name, setName , parent, dispath) => {
+    const elem = {
+        id: Date.now(),
+        src: name,
+        parent: parent,
+        edit: false,
+    }
+    dispath(addElemAction(elem))
+    setName('');
+    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
+    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
+    e.stopPropagation();
+}
+
+export const addToListLink = (e, name, link, setName,setLink, parent, dispath) => {
+    const elem = {
+        id: Date.now(),
+        name: name,
+        link: link,
+        parent: parent,
+        edit: false,
+    }
+    dispath(addElemAction(elem))
+    setName('');
+    setLink('');
+    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
+    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
+    e.stopPropagation();
+}
+
+export const addToListExpired = (e, value, setValue, parent, dispath) => {
+    const now = new Date();
+    const diff = (new Date(value.getTime() - now.getTime())) / 1000;
+    const name = 'Элемент пропадет через ' + diff.getHours() + ':' + diff.getMinutes() + ':' + diff.getSeconds();
+    const elem = {
+        id: now,
+        name: name,
+        expiredAt: Date.parse(value.toString()),
+        parent: parent,
+        edit: false,
+    }
+    dispath(addElemAction(elem))
+    //setName('');
+    setValue('');
+    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
+    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
+    e.stopPropagation();
+}
+
+export const updateElemName = (elem, dispatch, date) => {
+    elem.name = Date.parse(date.toString());
+    dispatch(updateElemAction(elem));
 }
 
 export const addSublist = (elem, dispath) => {
@@ -140,18 +228,6 @@ function deleteChilds(parent, dispath, list) {
         }
     })
 }
-
-// function findAllChilds(parentId, list) {
-//     let childs = [];
-
-//     list.map(item => { // eslint-disable-line
-//         if (item.parent === parentId) {
-//             childs.push(item);
-//         }
-//     })
-
-//     return childs;
-// }
 
 const insert = (arr, index, newItem) => [
     ...arr.slice(0, index),
