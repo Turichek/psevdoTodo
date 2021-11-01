@@ -10,6 +10,7 @@ const defaulteState = {
 
 const ADD_ELEM = 'ADD_ELEM';
 const UPDATE_ELEM = 'UPDATE_ELEM';
+const UPDATE_ELEMS = 'UPDATE_ELEMS';
 const UPDATE_LIST = 'UPDATE_LIST';
 const REMOVE_ELEM = 'REMOVE_ELEM';
 const SET_LIST_NAME = 'SET_LIST_NAME';
@@ -24,6 +25,18 @@ export const listReducer = (state = defaulteState, action) => {
             return { ...state, elems: [...state.elems, action.payload] }
 
         case UPDATE_LIST:
+            return {
+                ...state,
+                id: action.payload.id,
+                name: action.payload.name,
+                elems: action.payload.elems,
+                type: action.payload.type,
+                draggable: action.payload.draggable,
+                disabled: action.payload.disabled,
+                editable: action.payload.editable,
+            }
+
+        case UPDATE_ELEMS:
             return { ...state, elems: action.payload }
 
         case UPDATE_ELEM:
@@ -76,6 +89,7 @@ export const listReducer = (state = defaulteState, action) => {
 
 export const addElemAction = (payload) => ({ type: ADD_ELEM, payload });
 export const updateElemAction = (payload) => ({ type: UPDATE_ELEM, payload });
+export const updateElemsAction = (payload) => ({ type: UPDATE_ELEMS, payload });
 export const updateListAction = (payload) => ({ type: UPDATE_LIST, payload });
 export const removeElemAction = (payload) => ({ type: REMOVE_ELEM, payload });
 export const setListName = (payload) => ({ type: SET_LIST_NAME, payload });

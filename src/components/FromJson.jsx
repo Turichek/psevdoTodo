@@ -7,11 +7,11 @@ import { openCloseModalAction } from "../store/modalOpenReducer";
 
 export default function FromJson() {
     const dispath = useDispatch();
-    const list = useSelector(state => state.list.elems);
+    const list = useSelector(state => state.list);
 
     useEffect(() => {
-        if (list.length !== 0) {
-            dispath(addMainListIdAction(list[0].parent));
+        if (list.elems.length !== 0) {
+            dispath(addMainListIdAction(list.elems[0].parent));
         }
     })
 

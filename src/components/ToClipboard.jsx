@@ -6,7 +6,7 @@ import { addJsonAction } from "../store/jsonDataReducer";
 
 export default function ToClipboard() {
     const dispatch = useDispatch();
-    const list = useSelector(state => state.list.elems);
+    const list = useSelector(state => state.list);
     const json = useSelector(state => state.json.str)
 
     function inClipboard() {

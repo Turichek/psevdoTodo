@@ -1,4 +1,4 @@
-import { addElemAction, removeElemAction, updateElemAction, updateListAction } from "../../store/listReducer";
+import { addElemAction, removeElemAction, updateElemAction, updateElemsAction, updateListAction } from "../../store/listReducer";
 import { openCloseAlertAction } from "../../store/alertReducer";
 import { addDragElemAction } from "../../store/dragElemReducer";
 import { openCloseModalAction } from "../../store/modalOpenReducer";
@@ -8,12 +8,15 @@ const delay = 200;
 let timer = 0;
 let prevent = false; // eslint-disable-line
 
-export const toList = (import_json, dispath, setName) => {
+export const jsonToList = (import_json, dispath, setName) => {
     if (import_json !== null) {
         const str = import_json.replace(/\n/g, '').replace(/-/gm, '');
         dispath(addJsonAction(str));
         if (str.charAt(0) === '[') {
-            dispath(updateListAction(JSON.parse(str)));
+            const import_list=JSON.parse(str);
+            dispath(updateListAction({
+                id: import_list.id,
+                name: import_list.name}));
             dispath(openCloseAlertAction({ open: true, text: 'Список успешно добавлен', severity: 'success' }));
             dispath(openCloseModalAction({ open: false, text: '', parent: -1 }));
             setName('');
@@ -150,7 +153,6 @@ export const deleteExpider = (elem, dispath, list) => {
         else {
             const now = new Date();
             const diff = new Date(decoded.exp * 1000 - now);
-            console.log(diff);
             const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
             elem.name = name;
             dispath(updateElemAction(elem));
@@ -239,9 +241,8 @@ export const Drop = (e, elem, dispath, dragElem, list) => {
     else {
         res = insert(list, list.indexOf(elem), dragElem);
     }
-    dispath(updateListAction(res));
+    dispath(updateElemsAction(res));
     dispath(addDragElemAction({}));
-
 
     console.log(dragElem, elem, list, ' drop elem');
 

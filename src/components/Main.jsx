@@ -1,7 +1,7 @@
 import { Box, Paper, Modal, Fade, Backdrop, TextField, Button, FormControl, Select, MenuItem, InputLabel, FormControlLabel, Checkbox, Typography } from "@mui/material";
 import React from "react";
 import { useState,forwardRef } from "react";
-import { addToList, addToListExpired, addToListImg, addToListInput, addToListLink, toList } from "./helpers/toList";
+import { addToList, addToListExpired, addToListImg, addToListInput, addToListLink, jsonToList } from "./helpers/toList";
 import ViewTodo from "./ViewTodo";
 import { useDispatch, useSelector } from "react-redux";
 import Notification from "./Notification";
@@ -34,7 +34,6 @@ const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
 export default function Main() {
     const dispatch = useDispatch();
     const list = useSelector(state => state.list);
-    const mainListId = useSelector(state => state.mainListId.value);
     const modal = useSelector(state => state.modal);
     const [name, setName] = useState('');
     const [value, setValue] = useState('');
@@ -69,7 +68,14 @@ export default function Main() {
         else {
             dispatch(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента или не указан тип листа', severity: 'error' }));
         }
-    }
+    };
+
+    const filterPassedTime = (time) => {
+        const currentDate = new Date();
+        const selectedDate = new Date(time);
+    
+        return currentDate.getTime() < selectedDate.getTime();
+    };
 
     return (
         <Box>
@@ -78,7 +84,7 @@ export default function Main() {
                     <EditorField />
                 </Paper>
                 <Paper sx={{ width: 0.49, overflow: 'auto' }} elevation={5}>
-                    <ViewTodo mainListId={mainListId} />
+                    <ViewTodo mainListId={list.id} />
                 </Paper>
             </Box>
             <Notification />
@@ -98,8 +104,6 @@ export default function Main() {
                             null
                             : 
                             <TextField label={modal.text} onChange={(e) => setName(e.target.value)} value={name} variant="outlined" />
-                             
-                            
                         }
                         {
                             modal.text === 'Введите название элементов через запятую' &&
@@ -130,13 +134,14 @@ export default function Main() {
                                         showTimeSelect
                                         showTimeSelectOnly
                                         timeIntervals={1}
+                                        filterTime={filterPassedTime}
                                         dateFormat="MMMM d, yyyy H:mm:ss"
                                         customInput={<ExampleCustomInput />}/>
                                     <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListExpired(e, value, setValue, modal.parent, dispatch)}>Добавить</Button>
                                 </>
                                 :
                             modal.text === 'Введите json для преобразования в список' ?
-                                <Button sx={{ mt: 1 }} variant='contained' onClick={() => toList(name, dispatch, setName)}>Добавить</Button>
+                                <Button sx={{ mt: 1 }} variant='contained' onClick={() => jsonToList(name, dispatch, setName)}>Добавить</Button>
                                 :
                             modal.text === 'Введите название списка' ?
                                 <>
