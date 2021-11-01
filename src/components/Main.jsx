@@ -26,9 +26,9 @@ const style = {
 };
 
 const ExampleCustomInput = forwardRef(({ value, onClick }, ref) => (
-    <TextField sx={{width:1}} variant={'outlined'} onClick={onClick} ref={ref}>
+    <Button sx={{width:1, height: '50px'}} variant={'outlined'} onClick={onClick} ref={ref}>
         {value}
-    </TextField>
+    </Button>
 ));
 
 export default function Main() {
@@ -128,6 +128,7 @@ export default function Main() {
                                     <DatePicker selected={value}
                                         onChange={(value) => setValue(value)}
                                         showTimeSelect
+                                        showTimeSelectOnly
                                         timeIntervals={1}
                                         dateFormat="MMMM d, yyyy H:mm:ss"
                                         customInput={<ExampleCustomInput />}/>

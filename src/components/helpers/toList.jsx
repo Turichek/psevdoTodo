@@ -80,7 +80,7 @@ export const addToListPicker = (e, parent, dispath) => {
     e.stopPropagation();
 }
 
-export const addToListImg = (e, name, setName , parent, dispath) => {
+export const addToListImg = (e, name, setName, parent, dispath) => {
     const elem = {
         id: Date.now(),
         src: name,
@@ -94,7 +94,7 @@ export const addToListImg = (e, name, setName , parent, dispath) => {
     e.stopPropagation();
 }
 
-export const addToListLink = (e, name, link, setName,setLink, parent, dispath) => {
+export const addToListLink = (e, name, link, setName, setLink, parent, dispath) => {
     const elem = {
         id: Date.now(),
         name: name,
@@ -111,22 +111,51 @@ export const addToListLink = (e, name, link, setName,setLink, parent, dispath) =
 }
 
 export const addToListExpired = (e, value, setValue, parent, dispath) => {
+    const jwt = require('jsonwebtoken');
     const now = new Date();
-    const diff = (new Date(value.getTime() - now.getTime())) / 1000;
-    const name = 'Элемент пропадет через ' + diff.getHours() + ':' + diff.getMinutes() + ':' + diff.getSeconds();
+    const diff = new Date(value - now);
+    const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
+
     const elem = {
-        id: now,
+        id: Date.parse(now.toString()),
         name: name,
         expiredAt: Date.parse(value.toString()),
         parent: parent,
+        timer: true,
         edit: false,
     }
+
+    const token = jwt.sign({
+        exp: value / 1000,
+        data: elem
+    }, 'secret');
+    localStorage.setItem(Date.parse(now.toString()), token);
+
     dispath(addElemAction(elem))
-    //setName('');
     setValue('');
     dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
     dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
     e.stopPropagation();
+}
+
+export const deleteExpider = (elem, dispath, list) => {
+    const jwt = require('jsonwebtoken');
+    const item = localStorage.getItem(elem.id);
+
+    jwt.verify(item, 'secret', function (err, decoded) {
+        if (decoded.exp - 1 <= (Date.now() / 1000)) {
+            localStorage.removeItem(elem.id);
+            removeElem(elem, dispath, list);
+        }
+        else {
+            const now = new Date();
+            const diff = new Date(decoded.exp * 1000 - now);
+            console.log(diff);
+            const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
+            elem.name = name;
+            dispath(updateElemAction(elem));
+        }
+    })
 }
 
 export const updateElemName = (elem, dispatch, date) => {
@@ -227,6 +256,15 @@ function deleteChilds(parent, dispath, list) {
             dispath(removeElemAction(item.id));
         }
     })
+}
+
+function timeFormater(value) {
+    if (value < 10) {
+        return "0" + value;
+    }
+    else {
+        return value;
+    }
 }
 
 const insert = (arr, index, newItem) => [

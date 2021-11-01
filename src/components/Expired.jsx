@@ -1,13 +1,19 @@
-import React from "react";
-import { Box, ListItem, Button, TextField, Checkbox, Typography } from "@mui/material";
-import { DragStart, openEditorElem, Drop, DragOver, DragEnter, editElem, removeElem} from "./helpers/toList";
+import React, { useEffect } from "react";
+import { Box, ListItem, TextField, Typography } from "@mui/material";
+import { DragStart, Drop, DragOver, DragEnter, editElem, deleteExpider } from "./helpers/toList";
 import { useDispatch, useSelector } from "react-redux";
-import { useState } from "react";
 
 export default function Expired({ elem }) {
     const dispatch = useDispatch();
     const list = useSelector(state => state.list);
     const dragElem = useSelector(state => state.dragElem.elem);
+
+    useEffect(() => {
+        const timer = setInterval(deleteExpider, 1000, elem, dispatch, list);
+        return () => {
+            clearTimeout(timer)
+        }
+    }, []) // eslint-disable-line
 
     return (
         <ListItem draggable={list.draggable} disabled={list.disabled} sx={{ display: 'flex', alignItems: 'start' }}
