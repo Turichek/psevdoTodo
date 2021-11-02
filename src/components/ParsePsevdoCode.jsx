@@ -45,12 +45,43 @@ export default function ParsePsevdoCode() {
                 elems = [...elemsStr.matchAll(findElem)];
                 break;
 
+            case 'datepicker':
+                findElem = /(\{(date):\s*([a-z0-9.]*)?\})/g;
+                elemsStr = psevdo.match(findElems)[2];
+                elems = [...elemsStr.matchAll(findElem)];
+                break;
+
+            case 'timepicker':
+                findElem = /(\{(time):\s*([a-z0-9:]*)?\})/g;
+                elemsStr = psevdo.match(findElems)[2];
+                elems = [...elemsStr.matchAll(findElem)];
+                break;
+
+            case 'expired':
+                findElem = /(\{(expiredAt):\s*([a-z0-9:]*)?\})/g;
+                elemsStr = psevdo.match(findElems)[2];
+                elems = [...elemsStr.matchAll(findElem)];
+                break;
+
             default:
                 break;
         }
 
         for (let i = 0; i < elems.length; i++) {
-            values.name.value = elems[i][3]
+            if (list.type === 'link') {
+                values.name.value = elems[i][2];
+                values.additional_parameter.value = elems[i][3];
+            }
+            else if (list.type === 'datepicker') {
+                values.name.value = new Date(elems[i][3]);
+            }
+            else if (list.type === 'timepicker' || list.type === 'expired') {
+                values.name.value = new Date((new Date().getMonth() + 1) + '.' + (new Date().getDate() + 1) + '.' + new Date().getFullYear() + " " + elems[i][3]);
+                values.additional_parameter.value = new Date((new Date().getMonth() + 1) + '.' + (new Date().getDate() + 1) + '.' + new Date().getFullYear() + " " + elems[i][3]);
+            }
+            else {
+                values.name.value = elems[i][3];
+            }
             addElemToList(values, list.id, dispatch, list.type);
         }
         setParsing(false);

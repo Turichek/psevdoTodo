@@ -69,7 +69,7 @@ export default function ViewItemsList({ parent, type }) {
                     )}
                 {
                     list.type === 'datepicker' || list.type === 'timepicker' ?
-                        <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList('dateTime', list.id, dispath, list.type, e)}>Добавить новый элемент в список</Button>
+                        <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList({name:{value: Date.now()}}, list.id, dispath, list.type, e)}>Добавить новый элемент в список</Button>
                         :
                         <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal()}>Добавить новый элемент в список</Button>
                 }

@@ -39,12 +39,12 @@ export const jsonToList = (import_json, dispath, setName) => {
 export const addElemToList = (values, parent, dispatch, type, e = null) => {
     let elem = {};
 
-    if (values === 'dateTime' || values.name.value !== null) {
+    if (values.name.value !== null) {
         switch (type) {
             case 'sublist':
             case 'withChecox':
                 elem = {
-                    id: Date.now(),
+                    id: Date.now() + getRandomInt(1000),
                     name: values.name.value,
                     parent: parent,
                     childs: false,
@@ -65,13 +65,12 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
             case 'timepicker':
             case 'datepicker':
                 elem = {
-                    id: Date.now(),
-                    name: Date.now(),
+                    id: Date.now() + getRandomInt(1000),
+                    name: Date.parse(values.name.value),
                     parent: parent,
                     edit: false,
                 }
                 break;
-
 
             case 'img':
                 elem = {
@@ -84,13 +83,13 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
 
             case 'link':
                 elem = {
-                    id: Date.now(),
+                    id: Date.now() + getRandomInt(1000),
                     name: values.name.value,
                     link: values.additional_parameter.value,
                     parent: parent,
                     edit: false,
                 }
-                values.additional_parameter.setter('');
+                if (values.additional_parameter.setter !== undefined) values.additional_parameter.setter('');
                 break;
 
             case 'expired':
@@ -100,7 +99,7 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                 const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
 
                 elem = {
-                    id: Date.parse(now.toString()),
+                    id: Date.parse(now.toString()) + getRandomInt(1000),
                     name: name,
                     expiredAt: Date.parse(values.additional_parameter.value.toString()),
                     parent: parent,
@@ -113,7 +112,7 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                     data: elem
                 }, 'secret');
                 localStorage.setItem(Date.parse(now.toString()), token);
-                values.additional_parameter.setter('');
+                if (values.additional_parameter.setter !== undefined) values.additional_parameter.setter('');
                 break;
 
             default:
