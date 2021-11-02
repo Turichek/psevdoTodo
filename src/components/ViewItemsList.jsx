@@ -6,7 +6,7 @@ import { openCloseModalAction } from "../store/modalOpenReducer";
 import WithCheckBox from "./WithCheckBox";
 import Input from "./Input";
 import DateTimePicker from "./DateTimePicker";
-import { addToListPicker } from "./helpers/toList";
+import { addElemToList } from "./helpers/toList";
 import Img from "./Img";
 import Linktype from "./Link";
 import Expired from "./Expired";
@@ -37,9 +37,9 @@ export default function ViewItemsList({ parent, type }) {
         <>
             <List sx={{ mx: 1,p: 0 }}>
                 {
-                    list.elems.map(elem =>
+                    list.elems.map((elem,index) =>
                         elem.parent === parent ?
-                            <Paper sx={{ m: 1 ,width: 'max-content' }} elevation={3} key={elem.id}>
+                            <Paper sx={{ m: 1 ,width: 'max-content' }} elevation={3} key={index}>
                                 {
                                     list.type === 'sublist' ?
                                         <Sublist elem={elem} />
@@ -69,7 +69,7 @@ export default function ViewItemsList({ parent, type }) {
                     )}
                 {
                     list.type === 'datepicker' || list.type === 'timepicker' ?
-                        <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addToListPicker(e, list.id, dispath)}>Добавить новый элемент в список</Button>
+                        <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList('dateTime', list.id, dispath, list.type, e)}>Добавить новый элемент в список</Button>
                         :
                         <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal()}>Добавить новый элемент в список</Button>
                 }

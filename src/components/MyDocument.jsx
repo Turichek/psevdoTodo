@@ -31,9 +31,9 @@ export default function MyDocument({ info }) {
         return (
             <View key={parent + 1} style={styles.section}>
                 {
-                    info.map(elem =>
+                    info.map((elem,index) =>
                         elem[2] === parent ?
-                            <div key={elem[0]}>
+                            <div key={index}>
                                 <Text style={styles.vote_text}>{elem[1]}</Text>
                                 {elem[3] !== false ? ViewList(elem[0]) : null}
                             </div>

@@ -1,7 +1,7 @@
 import { Box, Paper, Modal, Fade, Backdrop, TextField, Button, FormControl, Select, MenuItem, InputLabel, FormControlLabel, Checkbox, Typography } from "@mui/material";
 import React from "react";
 import { useState,forwardRef } from "react";
-import { addToList, addToListExpired, addToListImg, addToListInput, addToListLink, jsonToList } from "./helpers/toList";
+import { addElemToList, jsonToList } from "./helpers/toList";
 import ViewTodo from "./ViewTodo";
 import { useDispatch, useSelector } from "react-redux";
 import Notification from "./Notification";
@@ -38,6 +38,16 @@ export default function Main() {
     const [name, setName] = useState('');
     const [value, setValue] = useState('');
     const [type, setType] = useState('');
+    const values ={
+        name:{
+            value: name,
+            setter: setName,
+        },
+        additional_parameter:{
+            value: value,
+            setter: setValue,
+        }
+    }
 
     const SetTypeList = (event) => {
         setType(event.target.value);
@@ -106,23 +116,20 @@ export default function Main() {
                             <TextField label={modal.text} onChange={(e) => setName(e.target.value)} value={name} variant="outlined" />
                         }
                         {
-                            modal.text === 'Введите название элементов через запятую' &&
-                                list.type === 'input' ?
-                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListInput(e, name, modal.parent, setName, dispatch)}>Добавить</Button>
-                                :
-                            modal.text === 'Введите название элемента' &&
-                                (list.type === 'sublist' || list.type === 'withCheckBox') ?
-                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToList(e, name, modal.parent, setName, dispatch)}>Добавить</Button>
-                                :
-                            modal.text === 'Введите ссылку на картинку' &&
-                                list.type === 'img' ?
-                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListImg(e, name, setName, modal.parent, dispatch)}>Добавить</Button>
+                            (modal.text === 'Введите название элемента' ||
+                             modal.text === 'Введите название элементов через запятую' ||
+                             modal.text === 'Введите ссылку на картинку' ) &&
+                                (list.type === 'sublist' ||
+                                 list.type === 'withCheckBox' ||
+                                 list.type === 'input' ||
+                                 list.type === 'img' ) ?
+                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addElemToList(values, modal.parent, dispatch, list.type, e)}>Добавить</Button>
                                 :
                             modal.text === 'Введите текст ссылки' &&
                                 list.type === 'link' ?
                                 <>
                                     <TextField sx={{ mt: 1 }} label={'Введите ссылку'} onChange={(e) => setValue(e.target.value)} value={value} variant="outlined" />
-                                    <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListLink(e, name, value, setName, setValue, modal.parent, dispatch)}>Добавить</Button>
+                                    <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addElemToList(values, modal.parent, dispatch, list.type, e)}>Добавить</Button>
                                 </>
                                 :
                             modal.text === 'Введите до какого момента будет существовать элемент:' &&
@@ -137,7 +144,7 @@ export default function Main() {
                                         filterTime={filterPassedTime}
                                         dateFormat="MMMM d, yyyy H:mm:ss"
                                         customInput={<ExampleCustomInput />}/>
-                                    <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addToListExpired(e, value, setValue, modal.parent, dispatch)}>Добавить</Button>
+                                    <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addElemToList(values, modal.parent, dispatch, list.type, e)}>Добавить</Button>
                                 </>
                                 :
                             modal.text === 'Введите json для преобразования в список' ?

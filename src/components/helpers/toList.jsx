@@ -12,11 +12,17 @@ export const jsonToList = (import_json, dispath, setName) => {
     if (import_json !== null) {
         const str = import_json.replace(/\n/g, '').replace(/-/gm, '');
         dispath(addJsonAction(str));
-        if (str.charAt(0) === '[') {
-            const import_list=JSON.parse(str);
+        if (str.charAt(0) === '{') {
+            const import_list = JSON.parse(str);
             dispath(updateListAction({
                 id: import_list.id,
-                name: import_list.name}));
+                name: import_list.name,
+                elems: import_list.elems,
+                type: import_list.type,
+                draggable: import_list.draggable,
+                disabled: import_list.disabled,
+                editable: import_list.editable,
+            }));
             dispath(openCloseAlertAction({ open: true, text: 'Список успешно добавлен', severity: 'success' }));
             dispath(openCloseModalAction({ open: false, text: '', parent: -1 }));
             setName('');
@@ -30,115 +36,101 @@ export const jsonToList = (import_json, dispath, setName) => {
     }
 }
 
-export const addToList = (e, name, parent, setName, dispath) => {
-    if (name !== null && name !== '') {
-        const elem = {
-            id: Date.now(),
-            name: name,
-            parent: parent,
-            childs: false,
-            edit: false,
+export const addElemToList = (values, parent, dispatch, type, e = null) => {
+    let elem = {};
+
+    if (values === 'dateTime' || values.name.value !== null) {
+        switch (type) {
+            case 'sublist':
+            case 'withChecox':
+                elem = {
+                    id: Date.now(),
+                    name: values.name.value,
+                    parent: parent,
+                    childs: false,
+                    edit: false,
+                }
+                break;
+
+            case 'input':
+                const arr = values.name.value.split(',')
+                elem = {
+                    id: Date.now() + getRandomInt(1000),
+                    name: arr,
+                    parent: parent,
+                    edit: false,
+                }
+                break;
+
+            case 'timepicker':
+            case 'datepicker':
+                elem = {
+                    id: Date.now(),
+                    name: Date.now(),
+                    parent: parent,
+                    edit: false,
+                }
+                break;
+
+
+            case 'img':
+                elem = {
+                    id: Date.now() + getRandomInt(1000),
+                    src: values.name.value,
+                    parent: parent,
+                    edit: false,
+                }
+                break;
+
+            case 'link':
+                elem = {
+                    id: Date.now(),
+                    name: values.name.value,
+                    link: values.additional_parameter.value,
+                    parent: parent,
+                    edit: false,
+                }
+                values.additional_parameter.setter('');
+                break;
+
+            case 'expired':
+                const jwt = require('jsonwebtoken');
+                const now = new Date();
+                const diff = new Date(values.additional_parameter.value - now);
+                const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
+
+                elem = {
+                    id: Date.parse(now.toString()),
+                    name: name,
+                    expiredAt: Date.parse(values.additional_parameter.value.toString()),
+                    parent: parent,
+                    timer: true,
+                    edit: false,
+                }
+
+                const token = jwt.sign({
+                    exp: values.additional_parameter.value / 1000,
+                    data: elem
+                }, 'secret');
+                localStorage.setItem(Date.parse(now.toString()), token);
+                values.additional_parameter.setter('');
+                break;
+
+            default:
+                break;
         }
-        dispath(addElemAction(elem))
-        setName('');
-        dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
-        dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
+        dispatch(addElemAction(elem))
+        if (values !== 'dateTime' && values.name.setter !== undefined) { values.name.setter(''); }
+        dispatch(openCloseModalAction({ open: false, text: '', parent: -1 }));
+        dispatch(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
     }
     else {
-        dispath(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента', severity: 'error' }));
-    }
-    e.stopPropagation();
-}
-
-export const addToListInput = (e, name, parent, setName, dispath) => {
-    if (name !== null && name !== '') {
-        const arr = name.split(',')
-        const elem = {
-            id: Date.now(),
-            name: arr,
-            parent: parent,
-            edit: false,
-        }
-        dispath(addElemAction(elem))
-        setName('');
-        dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
-        dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
-    }
-    else {
-        dispath(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента', severity: 'error' }));
-    }
-    e.stopPropagation();
-}
-
-export const addToListPicker = (e, parent, dispath) => {
-    const elem = {
-        id: Date.now(),
-        name: Date.now(),
-        parent: parent,
-        edit: false,
-    }
-    dispath(addElemAction(elem))
-    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
-    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
-    e.stopPropagation();
-}
-
-export const addToListImg = (e, name, setName, parent, dispath) => {
-    const elem = {
-        id: Date.now(),
-        src: name,
-        parent: parent,
-        edit: false,
-    }
-    dispath(addElemAction(elem))
-    setName('');
-    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
-    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
-    e.stopPropagation();
-}
-
-export const addToListLink = (e, name, link, setName, setLink, parent, dispath) => {
-    const elem = {
-        id: Date.now(),
-        name: name,
-        link: link,
-        parent: parent,
-        edit: false,
-    }
-    dispath(addElemAction(elem))
-    setName('');
-    setLink('');
-    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
-    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
-    e.stopPropagation();
-}
-
-export const addToListExpired = (e, value, setValue, parent, dispath) => {
-    const jwt = require('jsonwebtoken');
-    const now = new Date();
-    const diff = new Date(value - now);
-    const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
-
-    const elem = {
-        id: Date.parse(now.toString()),
-        name: name,
-        expiredAt: Date.parse(value.toString()),
-        parent: parent,
-        timer: true,
-        edit: false,
+        dispatch(openCloseAlertAction({ open: true, text: 'Не корректное имя элемента', severity: 'error' }));
     }
 
-    const token = jwt.sign({
-        exp: value / 1000,
-        data: elem
-    }, 'secret');
-    localStorage.setItem(Date.parse(now.toString()), token);
-
-    dispath(addElemAction(elem))
-    setValue('');
-    dispath(openCloseModalAction({ open: false, text: '', parent: -1, func: () => { } }));
-    dispath(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
-    e.stopPropagation();
+    if (e !== null) {
+        e.stopPropagation();
+    }
 }
 
 export const deleteExpider = (elem, dispath, list) => {
@@ -266,6 +258,10 @@ function timeFormater(value) {
     else {
         return value;
     }
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
 }
 
 const insert = (arr, index, newItem) => [
