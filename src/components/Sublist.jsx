@@ -12,7 +12,7 @@ export default function Sublist({ elem }) {
 
     return (
         <ListItem draggable={list.draggable} disabled={list.disabled} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start' }}
-            onDoubleClick={(e) => openEditorElem(e, elem, dispatch)}
+            onDoubleClick={(e) => openEditorElem(e, elem, dispatch, list)}
             onDrop={(e) => Drop(e, elem, dispatch, dragElem, list.elems)}
             onDragOver={(e) => DragOver(e)}
             onDragEnter={(e) => DragEnter(e)}
@@ -27,11 +27,18 @@ export default function Sublist({ elem }) {
                 :
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <Typography variant='subtitle1'>{elem.name}</Typography>
-                    <Button onClick={() => removeElem(elem, dispatch, list.elems)} sx={{ ml: 3 }} variant='contained' color='error'><DeleteIcon /></Button>
-                    {elem.childs === false ?
-                        <Button sx={{ ml: 1 }} onClick={() => addSublist(elem, dispatch)} color='success' variant='contained'>Добавить саблист</Button>
-                        :
-                        <Button sx={{ ml: 1 }} onClick={() => deleteSublist(elem, dispatch, list.elems)} color='error' variant='contained'>Удалить саблист</Button>
+                    {
+                        list.editable !== false ?
+                            <>
+                                <Button onClick={() => removeElem(elem, dispatch, list.elems)} sx={{ ml: 3 }} variant='contained' color='error'><DeleteIcon /></Button>
+                                {elem.childs === false ?
+                                    <Button sx={{ ml: 1 }} onClick={() => addSublist(elem, dispatch)} color='success' variant='contained'>Добавить саблист</Button>
+                                    :
+                                    <Button sx={{ ml: 1 }} onClick={() => deleteSublist(elem, dispatch, list.elems)} color='error' variant='contained'>Удалить саблист</Button>
+                                }
+                            </>
+                            :
+                            null
                     }
                 </Box>
             }

@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, ListItem, Button, TextField, List, ListItemIcon, ListItemText } from "@mui/material";
-import { DragStart, openEditorElem, Drop, DragOver, DragEnter, editElem, removeElem} from "./helpers/toList";
+import { DragStart, openEditorElem, Drop, DragOver, DragEnter, editElem, removeElem } from "./helpers/toList";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useDispatch, useSelector } from "react-redux";
 import StarIcon from '@mui/icons-material/Star';
@@ -12,7 +12,7 @@ export default function Input({ elem }) {
 
     return (
         <ListItem draggable={list.draggable} disabled={list.disabled} sx={{ display: 'flex', alignItems: 'stretch', justifyContent: 'space-between' }}
-            onDoubleClick={(e) => openEditorElem(e, elem, dispatch)}
+            onDoubleClick={(e) => openEditorElem(e, elem, dispatch, list)}
             onDrop={(e) => Drop(e, elem, dispatch, dragElem, list.elems)}
             onDragOver={(e) => DragOver(e)}
             onDragEnter={(e) => DragEnter(e)}
@@ -28,7 +28,7 @@ export default function Input({ elem }) {
                 <>
                     <List>
                         {
-                            elem.name.map((item,index) =>
+                            elem.name.map((item, index) =>
                                 <ListItem key={index}>
                                     <ListItemIcon>
                                         <StarIcon />
@@ -37,11 +37,16 @@ export default function Input({ elem }) {
                                 </ListItem>
                             )
                         }
-
                     </List>
-                    <Button onClick={() => removeElem(elem, dispatch, list.elems)} sx={{ ml: 3 }} variant='contained' color='error'>
-                        <DeleteIcon />
-                    </Button>
+                    {
+                        list.editable !== false ?
+                            <Button onClick={() => removeElem(elem, dispatch, list.elems)} sx={{ ml: 3 }} variant='contained' color='error'>
+                                <DeleteIcon />
+                            </Button>
+                            :
+                            null
+                    }
+
                 </>
             }
         </ListItem>

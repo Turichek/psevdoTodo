@@ -42,12 +42,12 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
     if (values.name.value !== null) {
         switch (type) {
             case 'sublist':
-            case 'withChecox':
+            case 'withCheckBox':
                 elem = {
                     id: Date.now() + getRandomInt(1000),
                     name: values.name.value,
                     parent: parent,
-                    childs: false,
+                    childs: values.additional_parameter.value,
                     edit: false,
                 }
                 break;
@@ -89,7 +89,6 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                     parent: parent,
                     edit: false,
                 }
-                if (values.additional_parameter.setter !== undefined) values.additional_parameter.setter('');
                 break;
 
             case 'expired':
@@ -97,9 +96,10 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                 const now = new Date();
                 const diff = new Date(values.additional_parameter.value - now);
                 const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
+                const rand = getRandomInt(1000);
 
                 elem = {
-                    id: Date.parse(now.toString()) + getRandomInt(1000),
+                    id: Date.parse(now.toString()) + rand,
                     name: name,
                     expiredAt: Date.parse(values.additional_parameter.value.toString()),
                     parent: parent,
@@ -111,15 +111,15 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                     exp: values.additional_parameter.value / 1000,
                     data: elem
                 }, 'secret');
-                localStorage.setItem(Date.parse(now.toString()), token);
-                if (values.additional_parameter.setter !== undefined) values.additional_parameter.setter('');
+                localStorage.setItem(Date.parse(now.toString()) + rand, token);
                 break;
 
             default:
                 break;
         }
-        dispatch(addElemAction(elem))
-        if (values !== 'dateTime' && values.name.setter !== undefined) { values.name.setter(''); }
+        dispatch(addElemAction(elem));
+        if (values.additional_parameter.setter !== undefined) values.additional_parameter.setter('');
+        if (values.name.setter !== undefined) values.name.setter('');
         dispatch(openCloseModalAction({ open: false, text: '', parent: -1 }));
         dispatch(openCloseAlertAction({ open: true, text: 'Элемент добавлен в список', severity: 'success' }));
     }
@@ -130,11 +130,14 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
     if (e !== null) {
         e.stopPropagation();
     }
+
 }
 
 export const deleteExpider = (elem, dispath, list) => {
     const jwt = require('jsonwebtoken');
     const item = localStorage.getItem(elem.id);
+
+    console.log(Date.now() / 1000, 'now');
 
     jwt.verify(item, 'secret', function (err, decoded) {
         if (decoded.exp - 1 <= (Date.now() / 1000)) {
@@ -142,6 +145,7 @@ export const deleteExpider = (elem, dispath, list) => {
             removeElem(elem, dispath, list);
         }
         else {
+            console.log(decoded.exp - 1, 'exp');
             const now = new Date();
             const diff = new Date(decoded.exp * 1000 - now);
             const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
@@ -174,17 +178,19 @@ export const removeElem = (elem, dispath, list) => {
     dispath(removeElemAction(elem.id));
 }
 
-export const openEditorElem = (e, elem, dispath) => {
-    clearTimeout(timer);
-    prevent = true;
+export const openEditorElem = (e, elem, dispath, list) => {
+    if (list.editable !== false) {
+        clearTimeout(timer);
+        prevent = true;
 
-    elem.edit = true;
-    dispath(updateElemAction(elem));
+        elem.edit = true;
+        dispath(updateElemAction(elem));
 
-    setTimeout(() => {
-        prevent = false;
-    }, delay);
-    e.stopPropagation()
+        setTimeout(() => {
+            prevent = false;
+        }, delay);
+        e.stopPropagation()
+    }
 }
 
 export const editElem = (e, elem, dispath) => {
@@ -259,8 +265,15 @@ function timeFormater(value) {
     }
 }
 
-function getRandomInt(max) {
+export function getRandomInt(max) {
     return Math.floor(Math.random() * max);
+}
+
+export function sleep(miliseconds) {
+    let currentTime = new Date().getTime();
+
+    while (currentTime + miliseconds >= new Date().getTime()) {
+    }
 }
 
 const insert = (arr, index, newItem) => [

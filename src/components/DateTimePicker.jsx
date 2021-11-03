@@ -48,9 +48,15 @@ export default function DateTimePicker({ elem }) {
                                     updateElemName(elem, dispatch, date);
                                 }} customInput={<ExampleCustomInput />} />
                     }
-                    <Button onClick={() => removeElem(elem, dispatch, list.elems)} sx={{ ml: 3 }} variant='contained' color='error'>
-                        <DeleteIcon />
-                    </Button>
+                    {
+                        list.editable !== false ?
+                            <Button onClick={() => removeElem(elem, dispatch, list.elems)} sx={{ ml: 3 }} variant='contained' color='error'>
+                                <DeleteIcon />
+                            </Button>
+                            :
+                            null
+                    }
+
                 </>
             }
         </ListItem>

@@ -1,5 +1,5 @@
 const defaulteState = {
-    text: '',
+    text: '"Введите тут название списка":\ndraggable: false\ndisabled: false\neditable: false\ntype:',
 }
 
 const ADD_PSEVDOCODE = 'ADD_PSEVDOCODE';

@@ -109,6 +109,10 @@ export default function Main() {
                 }}>
                 <Fade in={modal.open}>
                     <Box sx={style}>
+                        <Box sx={{mb: 1,display:'flex',justifyContent:'space-between'}}>
+                            <Typography variant='h5'>Создание списка:</Typography>
+                            <Button onClick={() => dispatch(openCloseModalAction({ open: false, text: modal.text, parent: -1 }))} sx={{p:0,minWidth:'25px',width:'25px',height: '25px'}} variant='outlined'>X</Button>
+                        </Box>
                         {
                             modal.text === 'Введите до какого момента будет существовать элемент:' && list.type === 'expired' ?
                             null
@@ -123,7 +127,10 @@ export default function Main() {
                                  list.type === 'withCheckBox' ||
                                  list.type === 'input' ||
                                  list.type === 'img' ) ?
-                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => addElemToList(values, modal.parent, dispatch, list.type, e)}>Добавить</Button>
+                                <Button sx={{ mt: 1 }} variant='contained' onClick={(e) => {
+                                    setValue(false);
+                                    addElemToList(values, modal.parent, dispatch, list.type, e)
+                                }}>Добавить</Button>
                                 :
                             modal.text === 'Введите текст ссылки' &&
                                 list.type === 'link' ?

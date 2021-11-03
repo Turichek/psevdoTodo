@@ -17,29 +17,29 @@ export default function ViewItemsList({ parent, type }) {
 
     function openCloseModal() {
         if (list.type === 'sublist' || list.type === 'withCheckBox') {
-            dispath(openCloseModalAction({ open: true, text: 'Введите название элемента', parent: parent }))
+            dispath(openCloseModalAction({ open: true, text: 'Введите название элемента', parent: parent }));
         }
         else if (list.type === 'input') {
-            dispath(openCloseModalAction({ open: true, text: 'Введите название элементов через запятую', parent: parent }))
+            dispath(openCloseModalAction({ open: true, text: 'Введите название элементов через запятую', parent: parent }));
         }
         else if (list.type === 'img') {
-            dispath(openCloseModalAction({ open: true, text: 'Введите ссылку на картинку', parent: parent }))
+            dispath(openCloseModalAction({ open: true, text: 'Введите ссылку на картинку', parent: parent }));
         }
         else if (list.type === 'link') {
-            dispath(openCloseModalAction({ open: true, text: 'Введите текст ссылки', parent: parent }))
+            dispath(openCloseModalAction({ open: true, text: 'Введите текст ссылки', parent: parent }));
         }
         else if (list.type === 'expired') {
-            dispath(openCloseModalAction({ open: true, text: 'Введите до какого момента будет существовать элемент:', parent: parent }))
+            dispath(openCloseModalAction({ open: true, text: 'Введите до какого момента будет существовать элемент:', parent: parent }));
         }
     }
 
     return (
         <>
-            <List sx={{ mx: 1,p: 0 }}>
+            <List sx={{ mx: 1, p: 0 }}>
                 {
-                    list.elems.map((elem,index) =>
+                    list.elems.map((elem, index) =>
                         elem.parent === parent ?
-                            <Paper sx={{ m: 1 ,width: 'max-content' }} elevation={3} key={index}>
+                            <Paper sx={{ m: 1, width: 'max-content' }} elevation={3} key={index}>
                                 {
                                     list.type === 'sublist' ?
                                         <Sublist elem={elem} />
@@ -68,11 +68,19 @@ export default function ViewItemsList({ parent, type }) {
                             : null
                     )}
                 {
-                    list.type === 'datepicker' || list.type === 'timepicker' ?
-                        <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList({name:{value: Date.now()}}, list.id, dispath, list.type, e)}>Добавить новый элемент в список</Button>
+                    list.editable !== false ?
+                        <>
+                            {
+                                list.type === 'datepicker' || list.type === 'timepicker' ?
+                                    <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList({ name: { value: new Date() } }, list.id, dispath, list.type, e)}>Добавить новый элемент в список</Button>
+                                    :
+                                    <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal()}>Добавить новый элемент в список</Button>
+                            }
+                        </>
                         :
-                        <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal()}>Добавить новый элемент в список</Button>
+                        null
                 }
+
             </List>
 
         </>

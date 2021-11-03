@@ -3,16 +3,17 @@ import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateListAction } from "../store/listReducer";
-import { addElemToList } from "./helpers/toList";
+import { updateElemsAction, updateListAction } from "../store/listReducer";
+import { addElemToList, getRandomInt } from "./helpers/toList";
 
 export default function ParsePsevdoCode() {
     const dispatch = useDispatch();
     const list = useSelector(state => state.list);
     const psevdo = useSelector(state => state.psevdo.text);
     const [parsing, setParsing] = useState(false);
+    const arr = [];
 
-    const FindElemsFromPsevdo = () => {
+    const FindElemsFromPsevdo = (parent, toFindStr) => {
         const values = {
             name: {
                 value: '',
@@ -21,51 +22,46 @@ export default function ParsePsevdoCode() {
                 value: '',
             }
         }
-        const findElems = /(elems):(\[[\s\d\w\S\D\W]*\])/;
+
+        const toFindElems = /(elems):\s*(\[[\s\d\w\S\D\W]+?\])/;
         let findElem;
-        let elemsStr;
-        let elems;
 
         switch (list.type) {
             case 'input':
-                findElem = /(\{(name):\s*([a-z0-9,]*)?\})/g;
-                elemsStr = psevdo.match(findElems)[2];
-                elems = [...elemsStr.matchAll(findElem)];
+                findElem = /(\{\s*(items)\s*:\s*([\w\d,]+)?\})/g;
                 break;
 
             case 'img':
-                findElem = /(\{(src):\s*(.*?)\})/g;
-                elemsStr = psevdo.match(findElems)[2];
-                elems = [...elemsStr.matchAll(findElem)];
+                findElem = /(\{\s*(src)\s*:\s*(.*?)\})/g;
                 break;
 
             case 'link':
-                findElem = /(\{name:\s*([a-z0-9,]*)?,link:\s*(.*?)\})/g;
-                elemsStr = psevdo.match(findElems)[2];
-                elems = [...elemsStr.matchAll(findElem)];
+                findElem = /(\{\s*name\s*:\s*([\w\d,]+)?,\s*link:\s*(.*?)\})/g;
                 break;
 
             case 'datepicker':
-                findElem = /(\{(date):\s*([a-z0-9.]*)?\})/g;
-                elemsStr = psevdo.match(findElems)[2];
-                elems = [...elemsStr.matchAll(findElem)];
+                findElem = /(\{\s*(date)\s*:\s*([\w\d./]+)?\})/g;
                 break;
 
             case 'timepicker':
-                findElem = /(\{(time):\s*([a-z0-9:]*)?\})/g;
-                elemsStr = psevdo.match(findElems)[2];
-                elems = [...elemsStr.matchAll(findElem)];
+                findElem = /(\{\s*(time)\s*:\s*([\w\d:]+)?\})/g;
                 break;
 
             case 'expired':
-                findElem = /(\{(expiredAt):\s*([a-z0-9:]*)?\})/g;
-                elemsStr = psevdo.match(findElems)[2];
-                elems = [...elemsStr.matchAll(findElem)];
+                findElem = /(\{\s*(expiredAt)\s*:\s*([\w\d:]+)?\})/g;
                 break;
 
+            case 'withCheckBox':
+                findElem = /(\{\s*(name)\s*:\s*([\w\d,.:]+)?\})/g;
+                break;
+
+            case 'sublist':
+                findElem = /(\s*\{\s*(name)\s*:\s*([\w\d.:]+)?\s*,\s*(elems)\s*:\s*(\[[\s\d\w\S\D\W]+?\])|\s*(name)\s*:\s*([\w\d.:]+)?\s*\})/g;
+                break;
             default:
                 break;
         }
+        const elems = [...toFindStr.matchAll(findElem)];
 
         for (let i = 0; i < elems.length; i++) {
             if (list.type === 'link') {
@@ -76,19 +72,50 @@ export default function ParsePsevdoCode() {
                 values.name.value = new Date(elems[i][3]);
             }
             else if (list.type === 'timepicker' || list.type === 'expired') {
-                values.name.value = new Date((new Date().getMonth() + 1) + '.' + (new Date().getDate() + 1) + '.' + new Date().getFullYear() + " " + elems[i][3]);
-                values.additional_parameter.value = new Date((new Date().getMonth() + 1) + '.' + (new Date().getDate() + 1) + '.' + new Date().getFullYear() + " " + elems[i][3]);
+                values.name.value = values.additional_parameter.value = new Date((new Date().getMonth() + 1) + '.' + new Date().getDate() + '.' + new Date().getFullYear() + " " + elems[i][3]);
+            }
+            else if (list.type === "sublist") {
+                if (elems[i][3] !== undefined) {
+                    values.name.value = elems[i][3];
+                }
+                else {
+                    values.name.value = elems[i][7];
+                }
+
+                if (elems[i][1].match(toFindElems) !== null) {
+                    values.additional_parameter.value = true;
+                }
+                else {
+                    values.additional_parameter.value = false;
+                }
+
+                const elem = {
+                    id: Date.now() + getRandomInt(1000),
+                    name: values.name.value,
+                    parent: parent,
+                    childs: values.additional_parameter.value,
+                    edit: false,
+                }
+                arr.push(elem);
+
+                if (values.additional_parameter.value === true) {
+                    FindElemsFromPsevdo(arr[arr.length - 1].id, elems[i][5]);
+                }
             }
             else {
                 values.name.value = elems[i][3];
             }
-            addElemToList(values, list.id, dispatch, list.type);
+
+            if(list.type !== 'sublist'){
+                addElemToList(values, list.id, dispatch, list.type);
+            }
         }
         setParsing(false);
+        console.log(arr);
     }
 
     const ParsePsevdo = () => {
-        const findName = /([a-z0-9]+)(:)/;
+        const findName = /"([\w\d\s]+)"(:)/;
         const findType = /((\btype\b)\s*:\s*(\bsublist\b|\binput\b|\bwithCheckBox\b|\bdatepicker\b|\btimepicker\b|\bimg\b|\blink\b|\bexpired\b))/;
         const findDraggable = /((\bdraggable\b)\s*:\s*(\btrue\b|\bfalse\b))/;
         const findDisabled = /((\bdisabled\b)\s*:\s*(\btrue\b|\bfalse\b))/;
@@ -123,7 +150,12 @@ export default function ParsePsevdoCode() {
 
     useEffect(() => {
         if (parsing !== false) {
-            FindElemsFromPsevdo();
+            const findElems = /(elems):\s*(\[[\s\d\w\S\D\W]+\])/;
+            const elemsStr = psevdo.match(findElems)[2];
+            FindElemsFromPsevdo(list.id, elemsStr);
+            if (list.type === 'sublist') {
+                dispatch(updateElemsAction(arr));
+            }
         }
     })
 
@@ -131,4 +163,3 @@ export default function ParsePsevdoCode() {
         <Button sx={{ width: 1 }} onClick={() => ParsePsevdo()} variant='contained'>Parse psevdo code</Button>
     )
 }
-
