@@ -44,7 +44,7 @@ export default function Sublist({ elem }) {
             }
             {elem.childs !== false ?
                 <Box>
-                    <ViewItemsList parent={elem.id} type={'sublist'} />
+                    <ViewItemsList parent={elem.id} type={elem.type} />
                 </Box>
                 : null
             }

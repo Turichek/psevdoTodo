@@ -6,6 +6,7 @@ import { alertReducer } from './alertReducer';
 import { dragElemReducer } from './dragElemReducer';
 import { modalOpenReducer } from './modalOpenReducer';
 import { psevdoCodeReducer } from './psevdoCodeReducer';
+import { listsReducer } from './listsReducer';
 
 const rootReducer = combineReducers({
     json: jsonDataReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
     dragElem: dragElemReducer,
     modal: modalOpenReducer,
     psevdo: psevdoCodeReducer,
+    lists: listsReducer,
 })
 
 export const store = createStore(rootReducer, composeWithDevTools());

@@ -17,47 +17,47 @@ export default function EditorField() {
 
     const addStrForPsevdo = () => {
         try {
+            const findRenderList = /"([\w\d\s]+)":\s*\n([\w\d\s\W\D\S]+?$)/;
             const toFindElems = /(elems):\s*(\[[\s\d\w\S\D\W]+?\])/;
-            const elems = psevdo.match(toFindElems);
-            
+            const elems = psevdo.match(findRenderList)[2].match(toFindElems);
 
             if(elems === null && strAdded === false){
                 const findType = /((\btype\b)\s*:\s*(\bsublist\b|\binput\b|\bwithCheckBox\b|\bdatepicker\b|\btimepicker\b|\bimg\b|\blink\b|\bexpired\b))/;
-                const type = psevdo.match(findType)[3];
+                const type = psevdo.match(findRenderList)[2].match(findType)[3];
 
                 switch (type) {
                     case 'input':
-                        setText(text + "\n\nelems:[\n\t{items: }\n]");
+                        setText(text + "\nelems:[\n\t{items: }\n]");
                         setStrAdded(true);
                         break;
 
                     case 'img':
-                        setText(text + "\n\nelems:[\n\t{src: }\n]");
+                        setText(text + "\nelems:[\n\t{src: }\n]");
                         setStrAdded(true);
                         break;
 
                     case 'link':
-                        setText(text + "\n\nelems:[\n\t{name: , link: }\n]");
+                        setText(text + "\nelems:[\n\t{name: , link: }\n]");
                         setStrAdded(true);
                         break;
 
                     case 'datepicker':
-                        setText(text + "\n\nelems:[\n\t{date: }\n]");
+                        setText(text + "\nelems:[\n\t{date: }\n]");
                         setStrAdded(true);
                         break;
 
                     case 'timepicker':
-                        setText(text + "\n\nelems:[\n\t{time: }\n]");
+                        setText(text + "\nelems:[\n\t{time: }\n]");
                         setStrAdded(true);
                         break;
 
                     case 'expired':
-                        setText(text + "\n\nelems:[\n\t{expiredAt: }\n]");
+                        setText(text + "\nelems:[\n\t{expiredAt: }\n]");
                         setStrAdded(true);
                         break;
 
                     case 'withCheckBox':
-                        setText(text + "\n\nelems:[\n\t{name: }\n]");
+                        setText(text + "\nelems:[\n\t{name: }\n]");
                         setStrAdded(true);
                         break;
 

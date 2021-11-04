@@ -36,19 +36,15 @@ export const jsonToList = (import_json, dispath, setName) => {
     }
 }
 
-export const addElemToList = (values, parent, dispatch, type, e = null) => {
+export const addElemToList = (values, parent, dispatch, type, e = null, isReturn = false) => {
     let elem = {};
 
     if (values.name.value !== null) {
         switch (type) {
-            case 'sublist':
             case 'withCheckBox':
                 elem = {
                     id: Date.now() + getRandomInt(1000),
                     name: values.name.value,
-                    parent: parent,
-                    childs: values.additional_parameter.value,
-                    edit: false,
                 }
                 break;
 
@@ -57,8 +53,6 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                 elem = {
                     id: Date.now() + getRandomInt(1000),
                     name: arr,
-                    parent: parent,
-                    edit: false,
                 }
                 break;
 
@@ -67,8 +61,6 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                 elem = {
                     id: Date.now() + getRandomInt(1000),
                     name: Date.parse(values.name.value),
-                    parent: parent,
-                    edit: false,
                 }
                 break;
 
@@ -76,8 +68,6 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                 elem = {
                     id: Date.now() + getRandomInt(1000),
                     src: values.name.value,
-                    parent: parent,
-                    edit: false,
                 }
                 break;
 
@@ -86,8 +76,6 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                     id: Date.now() + getRandomInt(1000),
                     name: values.name.value,
                     link: values.additional_parameter.value,
-                    parent: parent,
-                    edit: false,
                 }
                 break;
 
@@ -102,9 +90,6 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
                     id: Date.parse(now.toString()) + rand,
                     name: name,
                     expiredAt: Date.parse(values.additional_parameter.value.toString()),
-                    parent: parent,
-                    timer: true,
-                    edit: false,
                 }
 
                 const token = jwt.sign({
@@ -116,6 +101,13 @@ export const addElemToList = (values, parent, dispatch, type, e = null) => {
 
             default:
                 break;
+        }
+        elem.parent = parent;
+        elem.edit = false;
+        elem.type = type;
+
+        if(isReturn){
+            return elem;
         }
         dispatch(addElemAction(elem));
         if (values.additional_parameter.setter !== undefined) values.additional_parameter.setter('');

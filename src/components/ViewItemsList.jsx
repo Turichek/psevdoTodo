@@ -16,19 +16,19 @@ export default function ViewItemsList({ parent, type }) {
     const list = useSelector(state => state.list);
 
     function openCloseModal() {
-        if (list.type === 'sublist' || list.type === 'withCheckBox') {
+        if (type === 'sublist' || type === 'withCheckBox') {
             dispath(openCloseModalAction({ open: true, text: 'Введите название элемента', parent: parent }));
         }
-        else if (list.type === 'input') {
+        else if (type === 'input') {
             dispath(openCloseModalAction({ open: true, text: 'Введите название элементов через запятую', parent: parent }));
         }
-        else if (list.type === 'img') {
+        else if (type === 'img') {
             dispath(openCloseModalAction({ open: true, text: 'Введите ссылку на картинку', parent: parent }));
         }
-        else if (list.type === 'link') {
+        else if (type === 'link') {
             dispath(openCloseModalAction({ open: true, text: 'Введите текст ссылки', parent: parent }));
         }
-        else if (list.type === 'expired') {
+        else if (type === 'expired') {
             dispath(openCloseModalAction({ open: true, text: 'Введите до какого момента будет существовать элемент:', parent: parent }));
         }
     }
@@ -41,25 +41,25 @@ export default function ViewItemsList({ parent, type }) {
                         elem.parent === parent ?
                             <Paper sx={{ m: 1, width: 'max-content' }} elevation={3} key={index}>
                                 {
-                                    list.type === 'sublist' ?
+                                    type === 'sublist' ?
                                         <Sublist elem={elem} />
                                         :
-                                    list.type === 'withCheckBox' ?
+                                    type === 'withCheckBox' ?
                                         <WithCheckBox elem={elem} />
                                         :
-                                    list.type === 'input' ?
+                                    type === 'input' ?
                                         <Input elem={elem} />
                                         :
-                                    list.type === 'datepicker' || list.type === 'timepicker' ?
+                                    type === 'datepicker' || type === 'timepicker' ?
                                         <DateTimePicker elem={elem} />
                                         :
-                                    list.type === 'img' ?
+                                    type === 'img' ?
                                         <Img elem={elem} />
                                         :
-                                    list.type === 'link' ?
+                                    type === 'link' ?
                                         <Linktype elem={elem} />
                                         :
-                                    list.type === 'expired' ?
+                                    type === 'expired' ?
                                         <Expired elem={elem} />
                                         :
                                         null
@@ -71,8 +71,8 @@ export default function ViewItemsList({ parent, type }) {
                     list.editable !== false ?
                         <>
                             {
-                                list.type === 'datepicker' || list.type === 'timepicker' ?
-                                    <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList({ name: { value: new Date() } }, list.id, dispath, list.type, e)}>Добавить новый элемент в список</Button>
+                                type === 'datepicker' || type === 'timepicker' ?
+                                    <Button sx={{ m: 1 }} variant='contained' onClick={(e) => addElemToList({ name: { value: new Date() } }, list.id, dispath, type, e)}>Добавить новый элемент в список</Button>
                                     :
                                     <Button sx={{ m: 1 }} variant='contained' onClick={() => openCloseModal()}>Добавить новый элемент в список</Button>
                             }
@@ -80,9 +80,7 @@ export default function ViewItemsList({ parent, type }) {
                         :
                         null
                 }
-
             </List>
-
         </>
     )
 }

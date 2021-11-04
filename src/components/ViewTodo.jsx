@@ -17,7 +17,7 @@ export default function ViewTodo({ mainListId }) {
                     :
                     <>
                         <Box sx={{ m: 1, pt: 1 }}>Ваш список: {list.name}</Box>
-                        <ViewItemsList parent={mainListId} />
+                        <ViewItemsList parent={mainListId} type={list.type} />
                     </>
             }
         </>
