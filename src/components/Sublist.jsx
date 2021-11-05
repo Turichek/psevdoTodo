@@ -42,11 +42,18 @@ export default function Sublist({ elem }) {
                     }
                 </Box>
             }
-            {elem.childs !== false ?
-                <Box>
-                    <ViewItemsList parent={elem.id} type={elem.type} />
-                </Box>
-                : null
+            {
+                elem.childs !== false && elem.elemsType !== undefined ?
+                    <Box>
+                        <ViewItemsList parent={elem.id} type={elem.elemsType} />
+                    </Box>
+                    :
+                elem.childs !== false ?
+                    <Box>
+                        <ViewItemsList parent={elem.id} type={elem.type} />
+                    </Box>
+                    :
+                    null
             }
         </ListItem>
     )

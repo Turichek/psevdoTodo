@@ -24,6 +24,14 @@ export default function ParsePsevdoCode() {
     const findEditable = /((\beditable\b)\s*:\s*(\btrue\b|\bfalse\b))/;
     const toFindElems = /(elems):\s*(\[[\s\d\w\S\D\W]+?\])/;
 
+    const CheckRepetitions = (elem) => {
+        elemArr.map(item => {
+            if(elem.id === item.id){
+                elem.id++;
+            }
+        })
+    }
+
     const TypeToRegex = (type) => {
         switch (type) {
             case 'input':
@@ -103,14 +111,19 @@ export default function ParsePsevdoCode() {
                 }
 
                 let listToAdd;
-                listsArr.map(item => {
+               
+                listsArr.map(item => {  // eslint-disable-line
                     if (item.name === elems[i][9]) {
-                        listToAdd = item;
+                        listToAdd = Object.assign({}, item);
+                        item.id++;
+                        item.elems.map(item => { // eslint-disable-line
+                            item.id++;
+                            item.parent++;
+                        })
                     }
                 })
 
                 const elem = {
-                    //id: Date.now() + getRandomInt(1000),
                     name: values.name.value,
                     parent: parent,
                     childs: values.additional_parameter.value,
@@ -121,6 +134,7 @@ export default function ParsePsevdoCode() {
                 if (listToAdd !== undefined) {
                     elem.id = listToAdd.id;
                     //elem.type = listToAdd.type;
+                    elem.elemsType = listToAdd.type;
                     elemArr.push(elem);
                     elemArr = elemArr.concat(listToAdd.elems);
                 }
@@ -130,7 +144,7 @@ export default function ParsePsevdoCode() {
                     elemArr.push(elem);
                 }
 
-                if (values.additional_parameter.value === true) {
+                if (values.additional_parameter.value === true && elems[i][9] === undefined) {
                     FindElemsFromPsevdo(elemArr[elemArr.length - 1].id, elems[i][5], type);
                 }
             }

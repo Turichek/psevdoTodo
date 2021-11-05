@@ -41,6 +41,15 @@ export const addElemToList = (values, parent, dispatch, type, e = null, isReturn
 
     if (values.name.value !== null) {
         switch (type) {
+            case 'sublist':
+                elem = {
+                    id: Date.now() + getRandomInt(1000),
+                    name: values.name.value,
+                    childs: false,
+                    elemsType: 'sublist',
+                }
+                break;
+
             case 'withCheckBox':
                 elem = {
                     id: Date.now() + getRandomInt(1000),
