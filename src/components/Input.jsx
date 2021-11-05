@@ -9,6 +9,7 @@ export default function Input({ elem }) {
     const dispatch = useDispatch();
     const list = useSelector(state => state.list);
     const dragElem = useSelector(state => state.dragElem.elem);
+    let qwe;
 
     return (
         <ListItem draggable={list.draggable} disabled={list.disabled} sx={{ display: 'flex', alignItems: 'stretch', justifyContent: 'space-between' }}
@@ -28,15 +29,17 @@ export default function Input({ elem }) {
                 <>
                     <List>
                         {
-                            elem.name.map((item, index) =>
+                            qwe = elem.name.map?.((item, index) =>
                                 <ListItem key={index}>
                                     <ListItemIcon>
                                         <StarIcon />
                                     </ListItemIcon>
                                     <ListItemText primary={item} />
                                 </ListItem>
+                                
                             )
                         }
+                        {console.log(qwe)}
                     </List>
                     {
                         list.editable !== false ?

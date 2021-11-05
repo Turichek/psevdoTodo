@@ -1,1 +1,20 @@
-[{"id":1635239763716,"name":"1","parent":1635239750965,"childs":false,"edit":false},{"id":1635239765244,"name":"мчсм","parent":1635239750965,"childs":true,"edit":false},{"id":1635239766693,"name":"3","parent":1635239750965,"childs":false,"edit":false},{"id":1635239768157,"name":"4","parent":1635239750965,"childs":false,"edit":false},{"id":1635239769460,"name":"5","parent":1635239750965,"childs":false,"edit":false},{"id":1635239774501,"name":"564","parent":1635239765244,"childs":true,"edit":false},{"id":1635239776445,"name":"6","parent":1635239765244,"childs":false,"edit":false},{"id":1635239781285,"name":"7","parent":1635239774501,"childs":false,"edit":false},{"id":1635239783557,"name":"567","parent":1635239774501,"childs":true,"edit":false},{"id":1635239785125,"name":"9","parent":1635239774501,"childs":false,"edit":false},{"id":1635239893703,"name":"xcv","parent":1635239783557,"childs":false,"edit":false}]
+function getListIdx(str, substr) {
+  let listIdx = []
+  let lastIndex = -1
+  while ((lastIndex = str.indexOf(substr, lastIndex + 1)) !== -1) {
+    listIdx.push(lastIndex)
+  }
+  return listIdx
+}
+
+
+const str = 'abc bca abcabc cba' 
+const indexs = getListIdx(str, 'a')
+const arr = str.split('')
+
+for(let i = indexs.length - 1;i>0;i--)
+{
+    console.log(indexs[i])
+    arr.splice(indexs[i],1)
+}
+arr.join('');

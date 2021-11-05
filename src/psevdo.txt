@@ -1,54 +1,63 @@
-Sublist:
+"Imgs":[
+	type: img
+	elems:[
+	{src: https://avatars.githubusercontent.com/u/72187966?v=4}
+	{src: https://react-pdf.org/images/logo.png}
+	{src: https://metanit.com/web/html5/pics/9.7.png}
+]
+
+"Inputs":[
+	type: input
+	elems:[
+	{items: 1,2,3,4}
+	{items: 5,6}
+]
+
+"Links":[
+        type: link
+	elems:[
+	{name: vadim, link: https://avatars.githubusercontent.com/u/72187966?v=4}
+	{name: img_pdf, link: https://react-pdf.org/images/logo.png}
+	{name: form metanite, link: https://metanit.com/web/html5/pics/9.7.png}
+]
+
+"Enter the name of the list here":
 draggable: false
+disabled: false
+editable: false
 type: sublist
+
 elems: [
+{href: Imgs}
+{name: 10:10:21,
+	elems:[
+	{name: asdasd}
+	{name: asdasd}
+	{name: 10:10:21, 
+		elems:[
+		{name: asdasd}
+		{name: 10:10:21, 
+			elems:[
+			{name: asdasd}
+			{name: 10:10:21, 
+				elems:[
+				{href: Inputs}
+				{name: asdasd}
+				{name: asdasd}
+				{href: Inputs}
+			]}
+			{name: asdasd}
+		]}
+		{name: asdasd}
+	]}	
+	{name: asdasd}
+]}
 {name: 10:10:21, 
-    elems:[
-        {name: asdasd}
-        {name: asdasd}
-        {name: 10:10:21, 
-            elems:[
-                {name: asdajghjgsd}
-                {name: asdasd}
-                {name: 10:10:21, 
-                    elems:[
-                        {name: asdasd}
-                        {name: asdasd}
-                        {name: 10:10:21, 
-                            elems:[
-                                {name: asdasd}
-                                {name: asdasd}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
-{name: fdgjkldfjgjk}
-{name: 10:10:21, 
-    elems:[
-        {name: asdasd}
-        {name: asdasd}
-        {name: 10:10:21, 
-            elems:[
-                {name: asdasd}
-                {name: asdasd}
-                {name: 10:10:21, 
-                    elems:[
-                        {name: asdasd}
-                        {name: asdasd}
-                        {name: 10:10:21, 
-                            elems:[
-                                {name: asdasd}
-                                {name: asdasd}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
+	elems:[
+	{name: asdasd}
+	{name: asdasd, 
+		elems:[{name:123}]}
+	{name: 10:10:21}
+]}
+{href: Links}
 ]

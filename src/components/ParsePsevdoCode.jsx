@@ -6,14 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateElemsAction, updateListAction } from "../store/listReducer";
 import { addListsAction } from "../store/listsReducer";
 import { addElemToList, getRandomInt } from "./helpers/toList";
+import { TypeToRegex, reTypeAttr, ChangeStr } from "./helpers/toParse";
 
 export default function ParsePsevdoCode() {
     const dispatch = useDispatch();
     const list = useSelector(state => state.list);
-    const additionLists = useSelector(state => state.lists);
     const psevdo = useSelector(state => state.psevdo.text);
     const [parsing, setParsing] = useState(false);
     const [toRenderListStr, setToRenderListStr] = useState('');
+    let _ = require('lodash');
     let elemArr = [];
     let listsArr = [];
 
@@ -22,48 +23,7 @@ export default function ParsePsevdoCode() {
     const findDraggable = /((\bdraggable\b)\s*:\s*(\btrue\b|\bfalse\b))/;
     const findDisabled = /((\bdisabled\b)\s*:\s*(\btrue\b|\bfalse\b))/;
     const findEditable = /((\beditable\b)\s*:\s*(\btrue\b|\bfalse\b))/;
-    const toFindElems = /(elems):\s*(\[[\s\d\w\S\D\W]+?\])/;
-
-    const CheckRepetitions = (elem) => {
-        elemArr.map(item => {
-            if(elem.id === item.id){
-                elem.id++;
-            }
-        })
-    }
-
-    const TypeToRegex = (type) => {
-        switch (type) {
-            case 'input':
-                return /(\{\s*(items)\s*:\s*([\w\d,]+)?\})/g;
-
-
-            case 'img':
-                return /(\{\s*(src)\s*:\s*(.*?)\})/g;
-
-
-            case 'link':
-                return /(\{\s*name\s*:\s*([\w\d,]+)?,\s*link:\s*(.*?)\})/g;
-
-            case 'datepicker':
-                return /(\{\s*(date)\s*:\s*([\w\d./]+)?\})/g;
-
-            case 'timepicker':
-                return /(\{\s*(time)\s*:\s*([\w\d:]+)?\})/g;
-
-            case 'expired':
-                return /(\{\s*(expiredAt)\s*:\s*([\w\d:]+)?\})/g;
-
-            case 'withCheckBox':
-                return /(\{\s*(name)\s*:\s*([\w\d,.:]+)?\})/g;
-
-            case 'sublist':
-                return /(\s*\{\s*(name)\s*:\s*([\w\d.:]+)?\s*,\s*(elems)\s*:\s*(\[[\s\d\w\S\D\W]+?\])|\s*(name)\s*:\s*([\w\d.:]+)?\s*|\s*(href)\s*:\s*([\w\d.:]+)?\s*\})/g;
-
-            default:
-                return;
-        }
-    }
+    const toFindElems = /(elems):\s*(\[[\s\d\w\S\D\W]+?$)/;
 
     const FindElemsFromPsevdo = (parent, toFindStr, type, isReturn = false) => {
         const values = {
@@ -73,6 +33,11 @@ export default function ParsePsevdoCode() {
             additional_parameter: {
                 value: '',
             }
+        }
+        let changedToFindStr;
+
+        if (type === 'sublist') {
+            changedToFindStr = ChangeStr(toFindStr, /(elems):\s*(\[[\s\d\w\S\D\W]+?\])/g);
         }
 
         const findElem = TypeToRegex(type);
@@ -111,10 +76,10 @@ export default function ParsePsevdoCode() {
                 }
 
                 let listToAdd;
-               
+
                 listsArr.map(item => {  // eslint-disable-line
                     if (item.name === elems[i][9]) {
-                        listToAdd = Object.assign({}, item);
+                        listToAdd = _.cloneDeep(item);
                         item.id++;
                         item.elems.map(item => { // eslint-disable-line
                             item.id++;
@@ -133,14 +98,13 @@ export default function ParsePsevdoCode() {
 
                 if (listToAdd !== undefined) {
                     elem.id = listToAdd.id;
-                    //elem.type = listToAdd.type;
                     elem.elemsType = listToAdd.type;
                     elemArr.push(elem);
                     elemArr = elemArr.concat(listToAdd.elems);
                 }
                 else {
                     elem.id = Date.now() + getRandomInt(1000);
-                    //elem.type = type;
+                    elem.elemsType = 'sublist';
                     elemArr.push(elem);
                 }
 
@@ -191,7 +155,7 @@ export default function ParsePsevdoCode() {
 
         // eslint-disable-next-line
         lists.map(item => {
-            const id = Date.now();
+            const id = Date.now() + getRandomInt(1000);
             const type = item[2].match(findType)[3];
             const elemsStr = item[2].match(toFindElems)[2];
             FindElemsFromPsevdo(id, elemsStr, type, true);
@@ -208,15 +172,6 @@ export default function ParsePsevdoCode() {
         })
 
         dispatch(addListsAction(listsArr));
-    }
-
-    const reTypeAttr = (value) => {
-        if (value === null || value[3] === "false") {
-            return value = false;
-        }
-        else if (value[3] === "true") {
-            return value = true;
-        }
     }
 
     useEffect(() => {
