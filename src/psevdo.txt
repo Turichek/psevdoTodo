@@ -21,6 +21,47 @@
 	{name: form metanite, link: https://metanit.com/web/html5/pics/9.7.png}
 ]
 
+"Dates":[
+	type: datepicker
+	elems:[
+	{date: 10.13.2000}
+	{date: 10.13.2021}
+]
+
+"Times":[
+	type: timepicker
+	elems:[
+	{time: 14:13:20}
+	{time: 10:15:20}
+]
+
+"Expireds":[
+	type: expired
+	elems:[
+	{expiredAt: 21:13:20}
+	{expiredAt: 21:15:20}
+]
+
+"WithCheckBoxs":[
+        type: withCheckBox
+	elems:[
+	{name: vadim}
+	{name: img_pdf}
+	{name: form metanite}
+]
+
+"Sublists":[
+        type: sublist
+	elems:[
+	{name: vadim}
+	{name: img_pdf, 
+		elems:[
+		{name: good}
+	]}#
+	{name: form metanite}
+	]
+]
+
 "Enter the name of the list here":
 draggable: false
 disabled: false
@@ -28,13 +69,18 @@ editable: false
 type: sublist
 
 elems: [
+{href: Expireds}
+{href: Times}
+{href: Dates}
 {href: Imgs}
 {name: 10:10:21,
 	elems:[
+	{href: Sublists}
 	{name: asdasd}
 	{name: asdasd}
 	{name: 10:10:21, 
 		elems:[
+		{href: WithCheckBoxs}
 		{name: asdasd}
 		{name: 10:10:21, 
 			elems:[
@@ -46,18 +92,19 @@ elems: [
 				{name: asdasd}
 				{href: Inputs}
 			]}
-			{name: asdasd}
+			{name: sdjfsdio}
 		]}
-		{name: asdasd}
+		{href: Inputs}
+		{name: fgoid}
 	]}	
-	{name: asdasd}
-]}
+	{name: dfuigo}
+]}#
 {name: 10:10:21, 
 	elems:[
 	{name: asdasd}
 	{name: asdasd, 
 		elems:[{name:123}]}
 	{name: 10:10:21}
-]}
+]}#
 {href: Links}
 ]

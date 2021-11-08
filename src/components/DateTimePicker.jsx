@@ -35,7 +35,7 @@ export default function DateTimePicker({ elem }) {
                 :
                 <>
                     {
-                        list.type === 'datepicker' ?
+                        elem.type === 'datepicker' ?
                             <DatePicker selected={date}
                                 onChange={(date) => {
                                     setDate(date);

@@ -138,15 +138,12 @@ export const deleteExpider = (elem, dispath, list) => {
     const jwt = require('jsonwebtoken');
     const item = localStorage.getItem(elem.id);
 
-    console.log(Date.now() / 1000, 'now');
-
     jwt.verify(item, 'secret', function (err, decoded) {
         if (decoded.exp - 1 <= (Date.now() / 1000)) {
             localStorage.removeItem(elem.id);
             removeElem(elem, dispath, list);
         }
         else {
-            console.log(decoded.exp - 1, 'exp');
             const now = new Date();
             const diff = new Date(decoded.exp * 1000 - now);
             const name = 'Элемент пропадет через ' + timeFormater(diff.getHours() - 3) + ':' + timeFormater(diff.getMinutes()) + ':' + timeFormater(diff.getSeconds());
@@ -277,7 +274,7 @@ export function sleep(miliseconds) {
     }
 }
 
-const insert = (arr, index, newItem) => [
+export const insert = (arr, index, newItem) => [
     ...arr.slice(0, index),
     newItem,
     ...arr.slice(index)

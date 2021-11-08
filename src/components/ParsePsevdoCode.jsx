@@ -17,6 +17,8 @@ export default function ParsePsevdoCode() {
     let _ = require('lodash');
     let elemArr = [];
     let listsArr = [];
+    let isFirst = false;
+    let isChanged = false;
 
     const findRenderList = /"([\w\d\s]+)":\s*\n([\w\d\s\W\D\S]+?$)/;
     const findType = /((\btype\b)\s*:\s*(\bsublist\b|\binput\b|\bwithCheckBox\b|\bdatepicker\b|\btimepicker\b|\bimg\b|\blink\b|\bexpired\b))/;
@@ -35,13 +37,21 @@ export default function ParsePsevdoCode() {
             }
         }
         let changedToFindStr;
+        let elems;
 
-        if (type === 'sublist') {
-            changedToFindStr = ChangeStr(toFindStr, /(elems):\s*(\[[\s\d\w\S\D\W]+?\])/g);
+        if (type === 'sublist' && isFirst) {
+            changedToFindStr = ChangeStr(toFindStr, false);
         }
 
-        const findElem = TypeToRegex(type);
-        const elems = [...toFindStr.matchAll(findElem)];
+        const findElem = TypeToRegex(type,isFirst);
+        if(changedToFindStr !== undefined){
+            elems = [...changedToFindStr.matchAll(findElem)];
+            isChanged = true;
+        }
+        else{
+            elems = [...toFindStr.matchAll(findElem)];
+        }
+        
 
         for (let i = 0; i < elems.length; i++) {
             if (type === 'link') {
@@ -109,6 +119,12 @@ export default function ParsePsevdoCode() {
                 }
 
                 if (values.additional_parameter.value === true && elems[i][9] === undefined) {
+                    isFirst = true;
+
+                    if(isChanged){
+                        elems[i][5] = ChangeStr(elems[i],true);
+                    }
+                    
                     FindElemsFromPsevdo(elemArr[elemArr.length - 1].id, elems[i][5], type);
                 }
             }
@@ -168,6 +184,7 @@ export default function ParsePsevdoCode() {
             }
 
             listsArr.push(newList);
+            isFirst = false;
             elemArr = [];
         })
 

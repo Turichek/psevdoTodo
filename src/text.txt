@@ -10,11 +10,25 @@ function getListIdx(str, substr) {
 
 const str = 'abc bca abcabc cba' 
 const indexs = getListIdx(str, 'a')
+
+var1 --------
 const arr = str.split('')
 
 for(let i = indexs.length - 1;i>0;i--)
 {
     console.log(indexs[i])
     arr.splice(indexs[i],1)
+}
+arr.join('');
+
+var2 -------
+const arr = str.split('')
+let count = indexs.length - 2;
+
+for(let i = 0;i<indexs.length - 1;i++)
+{
+    console.log(indexs[count])
+    arr.splice(indexs[count],1)
+    count--
 }
 arr.join('');
