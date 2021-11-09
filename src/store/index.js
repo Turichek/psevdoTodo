@@ -1,12 +1,12 @@
 import { combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { jsonDataReducer } from './jsonDataReducer';
-import { listReducer } from './listReducer';
-import { alertReducer } from './alertReducer';
-import { dragElemReducer } from './dragElemReducer';
-import { modalOpenReducer } from './modalOpenReducer';
-import { psevdoCodeReducer } from './psevdoCodeReducer';
-import { listsReducer } from './listsReducer';
+import { jsonDataReducer } from './JsonData/jsonDataReducer';
+import { listReducer } from './List/listReducer';
+import { alertReducer } from './Alert/alertReducer';
+import { dragElemReducer } from './DragElem/dragElemReducer';
+import { modalOpenReducer } from './Modal/modalOpenReducer';
+import { psevdoCodeReducer } from './PsevdoCode/psevdoCodeReducer';
+import { additionalListsReducer } from './AdditionalLists/additionalListsReducer';
 
 const rootReducer = combineReducers({
     json: jsonDataReducer,
@@ -15,7 +15,7 @@ const rootReducer = combineReducers({
     dragElem: dragElemReducer,
     modal: modalOpenReducer,
     psevdo: psevdoCodeReducer,
-    lists: listsReducer,
+    lists: additionalListsReducer,
 })
 
 export const store = createStore(rootReducer, composeWithDevTools());

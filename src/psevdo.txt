@@ -57,9 +57,9 @@
 	{name: img_pdf, 
 		elems:[
 		{name: good}
-	]}#
+	}#
 	{name: form metanite}
-	]
+	
 ]
 
 "Enter the name of the list here":

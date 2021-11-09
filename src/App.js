@@ -1,10 +1,10 @@
 import { Grid } from '@mui/material';
 import './App.css';
-import Main from './components/Main';
-import ToPDF from "./components/ToPDF";
-import ToClipboard from "./components/ToClipboard";
-import FromJson from "./components/FromJson";
-import ParsePsevdoCode from './components/ParsePsevdoCode';
+import Main from './components/Main/Main';
+import ToPDF from "./components/PDF/ToPDF";
+import ToClipboard from "./components/Main/ToClipboard";
+import FromJson from "./components/Main/FromJson";
+import ParsePsevdoCode from './components/ParsePsevdoCode/ParsePsevdoCode';
 
 function App() {
   return (

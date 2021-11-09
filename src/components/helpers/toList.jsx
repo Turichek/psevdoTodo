@@ -1,8 +1,8 @@
-import { addElemAction, removeElemAction, updateElemAction, updateElemsAction, updateListAction } from "../../store/listReducer";
-import { openCloseAlertAction } from "../../store/alertReducer";
-import { addDragElemAction } from "../../store/dragElemReducer";
-import { openCloseModalAction } from "../../store/modalOpenReducer";
-import { addJsonAction } from "../../store/jsonDataReducer";
+import { addElemAction, removeElemAction, updateElemAction, updateElemsAction, updateListAction } from "../../store/List/actions";
+import { openCloseAlertAction } from "../../store/Alert/actions";
+import { addDragElemAction } from "../../store/DragElem/actions";
+import { openCloseModalAction } from "../../store/Modal/actions";
+import { addJsonAction } from "../../store/JsonData/actions";
 
 const delay = 200;
 let timer = 0;

@@ -1,0 +1,10 @@
+export const ADD_ELEM = 'ADD_ELEM';
+export const UPDATE_ELEM = 'UPDATE_ELEM';
+export const UPDATE_ELEMS = 'UPDATE_ELEMS';
+export const UPDATE_LIST = 'UPDATE_LIST';
+export const REMOVE_ELEM = 'REMOVE_ELEM';
+export const SET_LIST_NAME = 'SET_LIST_NAME';
+export const SET_LIST_TYPE = 'SET_LIST_TYPE';
+export const SET_LIST_DRAGGABLE = 'SET_LIST_DRAGGABLE';
+export const SET_LIST_DISABLED = 'SET_LIST_DISABLED';
+export const SET_LIST_EDITABLE = 'SET_LIST_EDITABLE';

@@ -1,0 +1,1 @@
+export const OPEN_CLOSE_ALERT = 'OPEN_CLOSE_ALERT';
