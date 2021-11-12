@@ -33,7 +33,7 @@ export const TypeToRegex = (type, isFirst = false) => {
             return /(\{\s*(name)\s*:\s*([\w\d\s,.:]+)?\s*\})/g;
 
         case 'sublist':
-            if (isFirst) {
+            if (!isFirst) {
                 return /(\s*(name)\s*:\s*([\w\d\s.:]+)?\s*,\s*(elems)\s*:\s*(\[[\s\d\w\S\D\W]+?\])|\s*(name)\s*:\s*([\w\d\s.:]+)?\s*|\s*(href)\s*:\s*([\w\d.:]+)?\s*\})/g;
             }
             else {
@@ -61,33 +61,63 @@ export const ChangeStr = (str, isReturnSymbol) => {
         const findSymbolsBeginElems = getListIdx(str, '[');
         findSymbolsEndElems = getListIdx(str, ']');
         const arr = str.split('');
-        let count = findSymbolsEndElems.length - 3;
 
-        for (let i = 0; i < findSymbolsBeginElems.length - 1; i++) {
-            if (findSymbolsEndElems[count] > 0) {
-                arr.splice(findSymbolsEndElems[count], 1);
-                count--;
-            }
+        findSymbolsEndElems = CheckToDeleteSymbol(findSymbolsBeginElems, findSymbolsEndElems);
+        
+        findSymbolsEndElems.reverse();
+        for (let i = 0; i < findSymbolsEndElems.length; i++) {
+            console.log(arr[findSymbolsEndElems[i]]);
+            arr.splice(findSymbolsEndElems[i], 1);
         }
+        findSymbolsEndElems.reverse();
 
         console.log(arr.join(''));
         console.log(findSymbolsBeginElems, 'begin');
         console.log(findSymbolsEndElems, 'end');
-        findSymbolsEndElems.pop();
         return arr.join('');
     }
     else {
         const diff = str[1].match(/(\s*name\s*:\s*[\w\d\s.:]+?\s*,\s*elems\s*:\s*)/)[1].length + str.index;
 
         let arr = str[5].split('');
-        const indexs = getListIdx(str[5], ']');
-        console.log(arr.length, 'length');
-        for (let i = 0; i < findSymbolsEndElems.length - 1; i++) {
+        
+        for (let i = 0; i < findSymbolsEndElems.length; i++) {
+            if(findSymbolsEndElems[i] - diff > arr.length || findSymbolsEndElems[i] < str.index){
+                continue;
+            }
             arr = insert(arr, findSymbolsEndElems[i] - diff, ']');
         }
 
-        console.log(indexs);
         console.log(arr.join(''));
         return arr.join('');
     }
+}
+
+const CheckToDeleteSymbol = (begin, end) => {
+    let allSymbols = [];
+    let toDelete = [];
+    let count = 0;
+
+    begin.forEach(item => {
+        allSymbols.push({index: item, symbol: '['})
+    })
+    end.forEach(item => {
+        allSymbols.push({index: item, symbol: ']'})
+    })
+
+    allSymbols.sort((a, b) => a.index > b.index ? 1 : -1)
+    for(let i = 1;i<allSymbols.length - 1;i++){
+        if(allSymbols[i].symbol === '['){
+            count++;
+        }
+        else {
+            if(count !== 1){
+                toDelete.push(allSymbols[i].index)
+            }
+            count--;
+        }
+    }
+
+    console.log(allSymbols);
+    return toDelete;
 }

@@ -18,8 +18,8 @@ export default function ParsePsevdoCode() {
     let _ = require('lodash');
     let elemArr = [];
     let listsArr = [];
-    let isFirst = false;
-    let isChanged = false;
+    // let isFirst = false;
+    // let isChanged = false;
 
     const findRenderList = /"([\w\d\s]+)":\s*\n([\w\d\s\W\D\S]+?$)/;
     const findType = /((\btype\b)\s*:\s*(\bsublist\b|\binput\b|\bwithCheckBox\b|\bdatepicker\b|\btimepicker\b|\bimg\b|\blink\b|\bexpired\b))/;
@@ -40,19 +40,25 @@ export default function ParsePsevdoCode() {
         let changedToFindStr;
         let elems;
 
-        if (type === 'sublist' && isFirst) {
+        if (type === 'sublist') {
             changedToFindStr = ChangeStr(toFindStr, false);
         }
 
-        const findElem = TypeToRegex(type, isFirst);
+        const findElem = TypeToRegex(type);
         if (changedToFindStr !== undefined) {
             elems = [...changedToFindStr.matchAll(findElem)];
-            isChanged = true;
         }
         else {
             elems = [...toFindStr.matchAll(findElem)];
         }
 
+        if (type === 'sublist') {
+            for (let i = 0; i < elems.length; i++) {
+                if (elems[i][1].match(toFindElems) !== null && elems[i][9] === undefined) {
+                    elems[i][5] = ChangeStr(elems[i], true);
+                }
+            }
+        }
 
         for (let i = 0; i < elems.length; i++) {
             if (type === 'link') {
@@ -120,11 +126,9 @@ export default function ParsePsevdoCode() {
                 }
 
                 if (values.additional_parameter.value === true && elems[i][9] === undefined) {
-                    isFirst = true;
-
-                    if (isChanged) {
-                        elems[i][5] = ChangeStr(elems[i], true);
-                    }
+                    // if (isChanged) {
+                    // elems[i][5] = ChangeStr(elems[i], true);
+                    // }
 
                     FindElemsFromPsevdo(elemArr[elemArr.length - 1].id, elems[i][5], type);
                 }
@@ -189,7 +193,7 @@ export default function ParsePsevdoCode() {
             }
 
             listsArr.push(newList);
-            isFirst = false;
+            // isFirst = false;
             elemArr = [];
         })
 
@@ -207,7 +211,7 @@ export default function ParsePsevdoCode() {
                 dispatch(updateElemsAction(elemArr));
             }
         }
-    },[parsing])
+    }, [parsing])
 
     return (
         <Button sx={{ width: 1 }} onClick={() => ParsePsevdo()} variant='contained'>Parse psevdo code</Button>

@@ -43,7 +43,7 @@
 ]
 
 "WithCheckBoxs":[
-        type: withCheckBox
+	type: withCheckBox
 	elems:[
 	{name: vadim}
 	{name: img_pdf}
@@ -51,15 +51,14 @@
 ]
 
 "Sublists":[
-        type: sublist
+	type: sublist
 	elems:[
-	{name: vadim}
 	{name: img_pdf, 
 		elems:[
 		{name: good}
-	}#
-	{name: form metanite}
-	
+		{name: good1}
+		]}
+	]}
 ]
 
 "Enter the name of the list here":
@@ -84,6 +83,11 @@ elems: [
 		{name: asdasd}
 		{name: 10:10:21, 
 			elems:[
+			{name: 10:10:21, 
+				elems:[
+				{name: asdasd}
+				{name: asdasd}
+			]}
 			{name: asdasd}
 			{name: 10:10:21, 
 				elems:[
@@ -98,13 +102,13 @@ elems: [
 		{name: fgoid}
 	]}	
 	{name: dfuigo}
-]}#
+]}
 {name: 10:10:21, 
 	elems:[
 	{name: asdasd}
 	{name: asdasd, 
 		elems:[{name:123}]}
 	{name: 10:10:21}
-]}#
+]}
 {href: Links}
 ]
